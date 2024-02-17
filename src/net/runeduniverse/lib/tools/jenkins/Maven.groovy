@@ -2,7 +2,7 @@ package net.runeduniverse.lib.tools.jenkins;
 
 class Maven implements BuildTool {
 
-	private final Object workflow;
+	protected final Object workflow;
 	private String tool = "maven-latest";
 
 	Maven(workflow){
@@ -22,7 +22,7 @@ class Maven implements BuildTool {
 	}
 
 	public MavenProject createProject(Map conf) {
-		return new MavenProject(this.workflow, this, conf);
+		return new MavenProject(this, conf);
 	}
 
 	public String exec(String path, String cmd) {

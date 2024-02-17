@@ -13,13 +13,13 @@ class MavenProject implements Project {
 	private MavenProject parent = null;
 	private List<MavenProject> modules = new LinkedList();
 
-	MavenProject(Object workflow, Maven mvn){
-		this.workflow = workflow;
+	MavenProject(Maven mvn){
 		this.mvn = mvn;
+		this.workflow = this.mvn.workflow;
 	}
-	MavenProject(Object workflow, Maven mvn, Map conf){
-		this.workflow = workflow;
+	MavenProject(Maven mvn, Map conf){
 		this.mvn = mvn;
+		this.workflow = this.mvn.workflow;
 		this.id = conf.id;
 		this.name = conf.name;
 		this.path = conf.path;
