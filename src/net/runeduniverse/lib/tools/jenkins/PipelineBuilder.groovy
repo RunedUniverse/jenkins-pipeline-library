@@ -25,7 +25,7 @@ class PipelineBuilder implements Serializable {
 	}
 
 	public void checkChanges() {
-		this.projects.each { it.setChanged(this.vsys.checkVersionTag(it.getId(), id.getVersion())) }
+		this.projects.each { it.setChanged(!this.vsys.versionTagExists(it.getId(), id.getVersion())) }
 	}
 
 	def mvn(args) {

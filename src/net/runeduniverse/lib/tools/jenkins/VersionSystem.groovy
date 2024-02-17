@@ -6,5 +6,5 @@ interface VersionSystem extends Serializable {
 
 	public setWorkflow(Object workflow);
 	
-	public boolean checkVersionTag(String projectId, String projectVersion);
+	public boolean versionTagExists(String projectId, String projectVersion);
 }
