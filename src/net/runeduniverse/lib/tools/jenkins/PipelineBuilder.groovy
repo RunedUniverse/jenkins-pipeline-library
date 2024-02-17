@@ -9,9 +9,7 @@ class PipelineBuilder implements Serializable {
 	}
 
 	def mvn(args) {
-		println("print ---")
-		println(steps)
-		println("print ---")
+		steps.sh "echo ${steps.toString()}"
 		//steps.sh "${steps.tool 'Maven'}/bin/mvn -o ${args}"
 	}
 	
