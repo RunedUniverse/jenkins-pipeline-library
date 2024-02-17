@@ -25,11 +25,6 @@ class PipelineBuilder implements Serializable {
 	}
 
 	public void checkChanges() {
-		this.projects.each { it.value.setChanged(!this.vsys.versionTagExists(it.value.getId(), id.value.getVersion())) }
-	}
-
-	def mvn(args) {
-		this.workflow.sh "echo Method 1: ${this.workflow.GLOBAL_MAVEN_SETTINGS}"
-		//steps.sh "${steps.tool 'Maven'}/bin/mvn -o ${args}"
+		this.projects.each { it.value.setChanged(!this.vsys.versionTagExists(it.value.getId(), it.value.getVersion())) }
 	}
 }
