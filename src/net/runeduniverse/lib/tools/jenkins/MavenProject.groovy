@@ -3,6 +3,7 @@ package net.runeduniverse.lib.tools.jenkins;
 class MavenProject implements Project {
 
 	def workflow;
+	private final Maven mvn;
 
 	private String id = "";
 	private String name = "";
@@ -12,8 +13,17 @@ class MavenProject implements Project {
 	private MavenProject parent = null;
 	private List<MavenProject> modules = new LinkedList();
 
-	MavenProject(workflow){
+	MavenProject(Object workflow, Maven mvn){
 		this.workflow = workflow;
+		this.mvn = mvn;
+	}
+	MavenProject(Object workflow, Maven mvn, Map conf){
+		this.workflow = workflow;
+		this.mvn = mvn;
+		this.setId(conf.id)
+				.setName(conf.name)
+				.setPath(conf.path)
+				.setModulePath(conf.modulePath);
 	}
 
 	////////////////////////////////////////////////////////////
@@ -76,11 +86,7 @@ class MavenProject implements Project {
 	}
 
 	public MavenProject addModule(Map conf) {
-		MavenProject project = new MavenProject(this.workflow)
-				.setId(conf.id)
-				.setName(conf.name)
-				.setPath(conf.path)
-				.setModulePath(conf.modulePath);
+		MavenProject project = new MavenProject(this.mvn, conf);
 		this.addModule(project);
 		return project;
 	}
@@ -96,20 +102,19 @@ class MavenProject implements Project {
 		String modPath = modulePath == null ? "." : modulePath;
 
 		if(this.parent == null) {
-			String version;
-			this.workflow.dir(path: this.path) {
-				version = this.workflow.sh(
-						returnStdout: true,
-						script: "${this.workflow.tool 'maven-latest'}/bin/mvn org.apache.maven.plugins:maven-help-plugin:evaluate -Dexpression=project.version -q -DforceStdout -pl=${modPath}"
-						);
-			};
-			return version;
+			return this.mvn.eval("project.version", this.path, modPath);
 		}
 		modPath = this.modulePath == null ? this.path : this.modulePath;
 		if(modulePath != null) {
 			modPath = modPath + '/' + modulePath;
 		}
 		return this.parent.getVersion(modPath);
+	}
+	
+	public void resolveResources() {
+		if(this.parent != null)
+			return;
+		this.mvn.resolveDependencies(this.path);
 	}
 
 	public void info(boolean interate = true) {

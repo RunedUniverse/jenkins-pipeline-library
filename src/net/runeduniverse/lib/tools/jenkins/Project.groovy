@@ -15,6 +15,8 @@ interface Project extends Serializable {
 	public void setChanged(boolean changed);
 	
 	public void attachTo(PipelineBuilder builder);
+	
+	public void resolveResources();
 
 	public void info();
 
