@@ -20,10 +20,10 @@ class MavenProject implements Project {
 	MavenProject(Object workflow, Maven mvn, Map conf){
 		this.workflow = workflow;
 		this.mvn = mvn;
-		this.setId(conf.id)
-				.setName(conf.name)
-				.setPath(conf.path)
-				.setModulePath(conf.modulePath);
+		this.setId(conf.id);
+		this.setName(conf.name);
+		this.setPath(conf.path);
+		this.setModulePath(conf.modulePath);
 	}
 
 	////////////////////////////////////////////////////////////
@@ -110,7 +110,7 @@ class MavenProject implements Project {
 		}
 		return this.parent.getVersion(modPath);
 	}
-	
+
 	public void resolveResources() {
 		if(this.parent != null)
 			return;
