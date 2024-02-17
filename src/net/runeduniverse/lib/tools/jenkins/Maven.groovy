@@ -68,8 +68,8 @@ class Maven implements BuildTool {
 		return result;
 	}
 
-	public void purgeCache() {
-		execDev(".", "-P ${this.workflow.getProperty("REPOS")} dependency:purge-local-repository -DactTransitively=false -DreResolve=false --non-recursive")
+	public void purgeCache(String path) {
+		execDev(path, "-P ${this.workflow.getProperty("REPOS")} dependency:purge-local-repository -DactTransitively=false -DreResolve=false --non-recursive")
 	}
 
 	public void resolveDependencies(String path) {

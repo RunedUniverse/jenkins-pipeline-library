@@ -111,6 +111,12 @@ class MavenProject implements Project {
 		return this.parent.getVersion(modPath);
 	}
 
+	public void purgeCache() {
+		if(this.parent != null)
+			return;
+		this.mvn.purgeCache(this.path);
+	}
+	
 	public void resolveResources() {
 		if(this.parent != null)
 			return;

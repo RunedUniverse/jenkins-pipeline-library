@@ -34,7 +34,7 @@ class PipelineBuilder implements Serializable {
 	}
 
 	public void purgeBuildCaches() {
-		this.buildTools.each { it.purgeCache(); }
+		this.projects.each { it.value.purgeCache(); }
 	}
 
 	public void resolveResources() {
