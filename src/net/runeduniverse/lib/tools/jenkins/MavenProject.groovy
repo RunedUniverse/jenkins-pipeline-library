@@ -1,5 +1,8 @@
 package net.runeduniverse.lib.tools.jenkins;
 
+@Grab(group='net.runeduniverse.lib.utils', module='utils-logging', version='1.0.2')
+import net.runeduniverse.lib.utils.logging.logs.CompoundTree;
+
 class MavenProject implements Project {
 
 	def workflow;
@@ -52,11 +55,11 @@ class MavenProject implements Project {
 		if(this.parent == null) {
 			String version;
 			this.workflow.dir(path: this.path) {
-						version = this.workflow.sh(
-								returnStdout: true,
-								script: "${this.workflow.tool 'maven-latest'}/bin/mvn org.apache.maven.plugins:maven-help-plugin:evaluate -Dexpression=project.version -q -DforceStdout -pl=${modPath}"
-								);
-					};
+				version = this.workflow.sh(
+						returnStdout: true,
+						script: "${this.workflow.tool 'maven-latest'}/bin/mvn org.apache.maven.plugins:maven-help-plugin:evaluate -Dexpression=project.version -q -DforceStdout -pl=${modPath}"
+						);
+			};
 			return version;
 		}
 		modPath = this.modulePath == null ? this.path : this.modulePath;
@@ -66,16 +69,18 @@ class MavenProject implements Project {
 		return this.parent.getVersion(modPath);
 	}
 
-	public void info() {
-		this.workflow.sh("echo name:       " + this.name);
-		this.workflow.sh("echo path:       " + this.path);
-		if(this.modulePath != null)
-			this.workflow.sh("echo modulePath: " + this.modulePath);
-		this.workflow.sh("echo version:    " + this.path);
-
+	protected CompoundTree _info() {
+		final CompoundTree tree = new CompoundTree("Module", this.name)
+				.append("path", this.path)
+				.append("module_path", this.modulePath)
+				.append("version", this.getVersion());
 		this.modules.each {
-			this.workflow.sh("echo -------------------------");
-			it.info();
+			tree.append(it._info());
 		}
+		return tree;
+	}
+
+	public void info() {
+		this.workflow.sh("printf 'Maven Project:\n" + this._info() + "\n'");
 	}
 }
