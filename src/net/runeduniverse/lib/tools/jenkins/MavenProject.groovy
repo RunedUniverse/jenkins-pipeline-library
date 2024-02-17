@@ -1,8 +1,8 @@
 package net.runeduniverse.lib.tools.jenkins;
 
 class MavenProject implements Project {
-
-	def workflow;
+	
+	private final Object workflow;
 	private final Maven mvn;
 
 	private String id = "";

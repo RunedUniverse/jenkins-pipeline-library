@@ -2,8 +2,7 @@ package net.runeduniverse.lib.tools.jenkins;
 
 class Maven implements BuildTool {
 
-	def workflow;
-
+	private final Object workflow;
 	private String tool = "maven-latest";
 
 	Maven(workflow){
