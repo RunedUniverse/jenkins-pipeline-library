@@ -6,7 +6,6 @@ class PipelineBuilder implements Serializable {
 
 	PipelineBuilder(steps) {
 		this.steps = steps;
-		print(steps)
 	}
 
 	def mvn(args) {
