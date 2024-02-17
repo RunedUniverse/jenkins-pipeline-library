@@ -51,13 +51,12 @@ class MavenProject implements Project {
 
 		if(this.parent == null) {
 			String version;
-			this.workflow.dir(
-					path: this.path, {
+			this.workflow.dir(path: this.path) {
 						version = this.workflow.sh(
 								returnStdout: true,
 								script: "${this.workflow.tool 'maven-latest'}/bin/mvn org.apache.maven.plugins:maven-help-plugin:evaluate -Dexpression=project.version -q -DforceStdout -pl=${modPath}"
 								);
-					});
+					};
 			return version;
 		}
 		modPath = this.modulePath == null ? this.path : this.modulePath;
