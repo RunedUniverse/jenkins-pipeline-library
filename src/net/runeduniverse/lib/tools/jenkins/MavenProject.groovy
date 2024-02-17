@@ -36,12 +36,7 @@ class MavenProject implements Project {
 		def modPath = modulePath == null ? "." : modulePath;
 
 		if(this.parent == null) {
-			this.workflow.dir(
-					path: this.path, {
-						return this.workflow.sh(
-								script: "pwd"
-								);
-					});
+			this.workflow.sh "modPath: ${modPath}"
 			this.workflow.dir(
 					path: this.path, {
 						return this.workflow.sh(
@@ -56,6 +51,8 @@ class MavenProject implements Project {
 	}
 
 	def info() {
-		this.workflow.sh "echo Method 1: ${this.getVersion()}"
+		this.workflow.sh "echo path: ${this.path}"
+		this.workflow.sh "echo modulePath: ${this.modulePath}"
+		this.workflow.sh "echo version: ${this.getVersion()}"
 	}
 }
