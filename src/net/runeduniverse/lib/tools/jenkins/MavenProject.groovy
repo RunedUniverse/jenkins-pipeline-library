@@ -33,17 +33,19 @@ class MavenProject implements Project {
 	}
 
 	public String getVersion(modulePath = null) {
-		def modPath = modulePath == null ? "." : modulePath;
+		String modPath = modulePath == null ? "." : modulePath;
 
 		if(this.parent == null) {
-			this.workflow.sh "echo modPath: ${modPath}"
+			String version;
 			this.workflow.dir(
 					path: this.path, {
-						return this.workflow.sh(
+						version = this.workflow.sh(
 								returnStdout: true,
 								script: "${this.workflow.tool 'maven-latest'}/bin/mvn org.apache.maven.plugins:maven-help-plugin:evaluate -Dexpression=project.version -q -DforceStdout -pl=${modPath}"
 								);
 					});
+				this.workflow.sh "echo version: ${version}"
+			return version;
 		}
 
 		modPath = modulePath == null ? this.modulePath : this.modulePath + '/' + modulePath;
@@ -53,6 +55,6 @@ class MavenProject implements Project {
 	def info() {
 		this.workflow.sh "echo path: ${this.path}"
 		this.workflow.sh "echo modulePath: ${this.modulePath}"
-		this.workflow.sh "echo version: ${this.getVersion()}"
+		this.workflow.sh "echo VERSION: ${this.getVersion()}"
 	}
 }
