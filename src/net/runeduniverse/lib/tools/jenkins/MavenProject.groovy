@@ -20,10 +20,10 @@ class MavenProject implements Project {
 	MavenProject(Object workflow, Maven mvn, Map conf){
 		this.workflow = workflow;
 		this.mvn = mvn;
-		this.setId(conf.id);
-		this.setName(conf.name);
-		this.setPath(conf.path);
-		this.setModulePath(conf.modulePath);
+		this.id = conf.id;
+		this.name = conf.name;
+		this.path = conf.path;
+		this.modulePath = conf.modulePath;
 	}
 
 	////////////////////////////////////////////////////////////
