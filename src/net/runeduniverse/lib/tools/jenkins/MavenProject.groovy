@@ -53,6 +53,11 @@ class MavenProject implements Project {
 		this.path = path;
 		return this;
 	}
+
+	public void setChanged(boolean changed) {
+		this.changed = changed;
+	}
+
 	public MavenProject setModulePath(String modulePath) {
 		this.modulePath = modulePath;
 		return this;
