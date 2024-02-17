@@ -26,7 +26,7 @@ class PipelineBuilder implements Serializable {
 	}
 
 	public void logProjects() {
-		this.projects.each { it.info(false); }
+		this.projects.each { it.value.info(false); }
 	}
 
 	public void checkChanges() {
