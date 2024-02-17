@@ -119,7 +119,7 @@ class MavenProject implements Project {
 		if(this.modulePath != null)
 			this.workflow.sh("echo modulePath: " + this.modulePath);
 		this.workflow.sh("echo version:    " + this.path);
-		this.workflow.sh("echo changed:    " + this.changed == null ? "????" : this.changed);
+		this.workflow.sh("echo changed:    " + this.changed == null ? "????" : this.changed.toString());
 
 		if(interate) {
 			this.modules.each {
