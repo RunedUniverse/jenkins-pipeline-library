@@ -75,7 +75,7 @@ class MavenProject implements Project {
 		this.workflow.sh("echo version:    " + this.path);
 
 		this.modules.each {
-			this.workflow.sh("-------------------------");
+			this.workflow.sh("echo -------------------------");
 			it.info();
 		}
 	}
