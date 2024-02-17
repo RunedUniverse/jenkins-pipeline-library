@@ -2,14 +2,16 @@ package net.runeduniverse.lib.tools.jenkins;
 
 class PipelineBuilder implements Serializable {
 
-	def steps
+	def workflow
 
-	PipelineBuilder(steps) {
-		this.steps = steps;
+	PipelineBuilder(workflow) {
+		this.workflow = workflow;
+		this.workflow.setProperty("GLOBAL_MAVEN_SETTINGS", "/srv/jenkins/.m2/global-settings.xml")
 	}
 
 	def mvn(args) {
-		steps.sh "echo ${steps.toString()}"
+		this.workflow.sh "Method 1: ${this.workflow.GLOBAL_MAVEN_SETTINGS}"
+		this.workflow.sh "Method 2: ${this.workflow.getProperty("GLOBAL_MAVEN_SETTINGS")}"
 		//steps.sh "${steps.tool 'Maven'}/bin/mvn -o ${args}"
 	}
 	
