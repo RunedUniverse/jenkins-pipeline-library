@@ -4,9 +4,11 @@ class MavenProject implements Project {
 
 	def workflow;
 
+	private String id = "";
 	private String name = "";
 	private String path = ".";
 	private String modulePath = ".";
+	private Boolean changed = null;
 	private MavenProject parent = null;
 	private List<MavenProject> modules = new LinkedList();
 
@@ -14,15 +16,44 @@ class MavenProject implements Project {
 		this.workflow = workflow;
 	}
 
-	public MavenProject setName(name) {
+	////////////////////////////////////////////////////////////
+	// GETTER
+	////////////////////////////////////////////////////////////
+
+	public String getId() {
+		return this.id;
+	}
+
+	public String getName() {
+		return this.name;
+	}
+
+	public String getPath() {
+		return this.path;
+	}
+
+	public boolean hasChanged() {
+		return this.changed == null ? true : this.changed;
+	}
+
+	////////////////////////////////////////////////////////////
+	// SETTER
+	////////////////////////////////////////////////////////////
+
+	public MavenProject setId(String id) {
+		this.id = id;
+		return this;
+	}
+
+	public MavenProject setName(String name) {
 		this.name = name;
 		return this;
 	}
-	public MavenProject setPath(path) {
+	public MavenProject setPath(String path) {
 		this.path = path;
 		return this;
 	}
-	public MavenProject setModulePath(modulePath) {
+	public MavenProject setModulePath(String modulePath) {
 		this.modulePath = modulePath;
 		return this;
 	}
@@ -30,6 +61,8 @@ class MavenProject implements Project {
 	protected void setParent(MavenProject parent) {
 		this.parent = parent;
 	}
+
+	////////////////////////////////////////////////////////////
 
 	public MavenProject addModule(MavenProject project) {
 		project.setParent(this);
@@ -39,11 +72,19 @@ class MavenProject implements Project {
 
 	public MavenProject addModule(Map conf) {
 		MavenProject project = new MavenProject(this.workflow)
+				.setId(conf.id)
 				.setName(conf.name)
 				.setPath(conf.path)
 				.setModulePath(conf.modulePath);
 		this.addModule(project);
 		return project;
+	}
+
+	public void attachTo(PipelineBuilder builder) {
+		builder.attachProject(this);
+		this.modules.each {
+			it.attachTo(builder);
+		}
 	}
 
 	public String getVersion(modulePath = null) {
@@ -52,11 +93,11 @@ class MavenProject implements Project {
 		if(this.parent == null) {
 			String version;
 			this.workflow.dir(path: this.path) {
-						version = this.workflow.sh(
-								returnStdout: true,
-								script: "${this.workflow.tool 'maven-latest'}/bin/mvn org.apache.maven.plugins:maven-help-plugin:evaluate -Dexpression=project.version -q -DforceStdout -pl=${modPath}"
-								);
-					};
+				version = this.workflow.sh(
+						returnStdout: true,
+						script: "${this.workflow.tool 'maven-latest'}/bin/mvn org.apache.maven.plugins:maven-help-plugin:evaluate -Dexpression=project.version -q -DforceStdout -pl=${modPath}"
+						);
+			};
 			return version;
 		}
 		modPath = this.modulePath == null ? this.path : this.modulePath;
@@ -66,16 +107,20 @@ class MavenProject implements Project {
 		return this.parent.getVersion(modPath);
 	}
 
-	public void info() {
+	public void info(boolean interate = true) {
+		this.workflow.sh("echo id:         " + this.id);
 		this.workflow.sh("echo name:       " + this.name);
 		this.workflow.sh("echo path:       " + this.path);
 		if(this.modulePath != null)
 			this.workflow.sh("echo modulePath: " + this.modulePath);
 		this.workflow.sh("echo version:    " + this.path);
+		this.workflow.sh("echo changed:    " + this.changed == null ? "????" : this.changed);
 
-		this.modules.each {
-			this.workflow.sh("echo -------------------------");
-			it.info();
+		if(interate) {
+			this.modules.each {
+				this.workflow.sh("echo -------------------------");
+				it.info();
+			}
 		}
 	}
 }
