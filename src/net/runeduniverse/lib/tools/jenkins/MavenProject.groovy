@@ -35,7 +35,13 @@ class MavenProject implements Project {
 	public String getVersion(modulePath = null) {
 		def modPath = modulePath == null ? "." : modulePath;
 
-		if(this.parent==null) {
+		if(this.parent == null) {
+			this.workflow.dir(
+					path: this.path, {
+						return this.workflow.sh(
+								script: "pwd"
+								);
+					});
 			this.workflow.dir(
 					path: this.path, {
 						return this.workflow.sh(
