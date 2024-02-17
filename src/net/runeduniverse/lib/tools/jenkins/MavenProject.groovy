@@ -36,12 +36,12 @@ class MavenProject implements Project {
 		def modPath = modulePath == null ? "." : modulePath;
 
 		if(this.parent == null) {
-			this.workflow.sh "modPath: ${modPath}"
+			this.workflow.sh "echo modPath: ${modPath}"
 			this.workflow.dir(
 					path: this.path, {
 						return this.workflow.sh(
 								returnStdout: true,
-								script: "${this.workflow.tool 'maven-latest'}/bin/mvn org.apache.maven.plugins:maven-help-plugin:evaluate -Dexpression=project.version -q -DforceStdout -pl=${this.path}"
+								script: "${this.workflow.tool 'maven-latest'}/bin/mvn org.apache.maven.plugins:maven-help-plugin:evaluate -Dexpression=project.version -q -DforceStdout -pl=${modPath}"
 								);
 					});
 		}
