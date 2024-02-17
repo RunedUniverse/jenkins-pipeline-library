@@ -44,17 +44,10 @@ class MavenProject implements Project {
 								script: "${this.workflow.tool 'maven-latest'}/bin/mvn org.apache.maven.plugins:maven-help-plugin:evaluate -Dexpression=project.version -q -DforceStdout -pl=${modPath}"
 								);
 					});
-				this.workflow.sh "echo version: ${version}"
 			return version;
 		}
 
 		modPath = modulePath == null ? this.modulePath : this.modulePath + '/' + modulePath;
 		return this.parent.getVersion(modPath);
-	}
-
-	def info() {
-		this.workflow.sh "echo path: ${this.path}"
-		this.workflow.sh "echo modulePath: ${this.modulePath}"
-		this.workflow.sh "echo VERSION: ${this.getVersion()}"
 	}
 }
