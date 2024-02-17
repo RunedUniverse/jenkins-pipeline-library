@@ -21,7 +21,7 @@ class MavenProject implements Project {
 		this.modulePath = modulePath;
 		return this;
 	}
-	
+
 	protected void setParent(MavenProject parent) {
 		this.parent = parent;
 	}
@@ -34,19 +34,22 @@ class MavenProject implements Project {
 
 	public String getVersion(modulePath = null) {
 		def modPath = modulePath == null ? "." : modulePath;
-		
+
 		if(this.parent==null) {
 			this.workflow.dir(
-					path: this.path,
-					{
+					path: this.path, {
 						return this.workflow.sh(
 								returnStdout: true,
 								script: "${this.workflow.tool 'maven-latest'}/bin/mvn org.apache.maven.plugins:maven-help-plugin:evaluate -Dexpression=project.version -q -DforceStdout -pl=${this.path}"
-								);						
+								);
 					});
 		}
-		
+
 		modPath = modulePath == null ? this.modulePath : this.modulePath + '/' + modulePath;
 		return this.parent.getVersion(modPath);
+	}
+
+	def info() {
+		this.workflow.sh "echo Method 1: ${this.getVersion()}"
 	}
 }
