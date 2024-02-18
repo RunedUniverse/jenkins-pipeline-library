@@ -73,7 +73,7 @@ class PipelineBuilder implements Serializable {
 						} else {
 							Utils.markStageSkippedForConditional(nameTxt);
 						}
-						post {
+						this.workflow.post {
 							always {
 								dir(path: "${project.getPath()}/target") {
 									archiveArtifacts artifacts: '*.pom', fingerprint: true
