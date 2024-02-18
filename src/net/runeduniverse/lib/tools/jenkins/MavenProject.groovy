@@ -11,7 +11,7 @@ class MavenProject implements Project {
 	private String id = "";
 	private String name = "";
 	private String path = ".";
-	private String modulePath = ".";
+	private String modulePath = null;
 	private Boolean changed = null;
 	private MavenProject parent = null;
 	private List<MavenProject> modules = new LinkedList();
@@ -127,8 +127,6 @@ class MavenProject implements Project {
 	}
 
 	public String execDev(Map cnf = [:]) {
-		String modPath = cnf.module == null ? "." : cnf.module;
-
 		if(this.parent == null) {
 			String profiles = ""
 			if(!StringUtils.isBlank(cnf.profiles)) {
@@ -138,13 +136,18 @@ class MavenProject implements Project {
 			if(!StringUtils.isBlank(cnf.goals)) {
 				goals = cnf.goals;
 			}
+			String modules = ""
+			if(!StringUtils.isBlank(cnf.module)) {
+				modules = "-pl=" + cnf.module;
+			}
 			this.workflow.echo("path:       " + this.path);
-			return this.mvn.execDev(this.path, "-P ${this.workflow.getProperty("REPOS")},${profiles} ${goals} -pl=${modPath}");
+			return this.mvn.execDev(this.path, "-P ${this.workflow.getProperty("REPOS")},${profiles} ${goals} ${modules}");
 		}
-		modPath = this.modulePath == null ? this.path : this.modulePath;
+		String modPath = this.modulePath == null ? this.path : this.modulePath;
 		if(cnf.module != null) {
-			cnf.module = modPath + '/' + cnf.module;
+			modPath = modPath + '/' + cnf.module;
 		}
+		cnf.module = modPath;
 		return this.parent.execDev(cnf);
 	}
 
