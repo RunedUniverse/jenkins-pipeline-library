@@ -144,7 +144,7 @@ class MavenProject implements Project {
 		if(modulePath != null) {
 			cnf.module = modPath + '/' + cnf.module;
 		}
-		return this.parent.getVersion(cnf);
+		return this.parent.execDev(cnf);
 	}
 
 	public void info(boolean interate = true) {
