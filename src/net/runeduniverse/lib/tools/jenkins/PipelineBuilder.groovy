@@ -40,6 +40,12 @@ class PipelineBuilder implements Serializable {
 	public void resolveResources() {
 		this.projects.each { it.value.resolveResources(); }
 	}
+	
+	public List<Project> collectProjects(){
+		List<Project> list = new LinkedList();
+		this.projects.each { list.add(it.value) }
+		return list;
+	}
 
 	public boolean hasChangedProjects() {
 		boolean changed = false;

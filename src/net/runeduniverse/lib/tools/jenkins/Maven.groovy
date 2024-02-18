@@ -40,21 +40,21 @@ class Maven implements BuildTool {
 		String globalSettingsFile = this.workflow.getProperty("GLOBAL_MAVEN_SETTINGS");
 		if(globalSettingsFile == null) {
 			globalSettingsFile = "";
-		}else {
+		} else {
 			globalSettingsFile = "-gs " + globalSettingsFile;
 		}
 
 		String settingsFile = this.workflow.getProperty("MAVEN_SETTINGS");
 		if(settingsFile == null) {
 			settingsFile = "";
-		}else {
+		} else {
 			settingsFile = "-s " + settingsFile;
 		}
 
 		String toolchains = this.workflow.getProperty("MAVEN_TOOLCHAINS");
 		if(toolchains == null) {
 			toolchains = "";
-		}else {
+		} else {
 			toolchains = "--global-toolchains " + toolchains;
 		}
 

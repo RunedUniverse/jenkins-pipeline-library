@@ -1,7 +1,10 @@
 package net.runeduniverse.lib.tools.jenkins;
 
+@Grab('net.runeduniverse.lib.utils:utils-common:1.1.0')
+import net.runeduniverse.lib.utils.common.StringUtils;
+
 class MavenProject implements Project {
-	
+
 	private final Object workflow;
 	private final Maven mvn;
 
@@ -116,11 +119,32 @@ class MavenProject implements Project {
 			return;
 		this.mvn.purgeCache(this.path);
 	}
-	
+
 	public void resolveResources() {
 		if(this.parent != null)
 			return;
 		this.mvn.resolveDependencies(this.path);
+	}
+
+	public String execDev(Map cnf = [:]) {
+		String modPath = cnf.module == null ? "." : cnf.module;
+
+		if(this.parent == null) {
+			String profiles = ""
+			if(!StringUtils.isBlank(cnf.profiles)) {
+				profiles = cnf.profiles;
+			}
+			String goals = ""
+			if(!StringUtils.isBlank(cnf.goals)) {
+				goals = cnf.goals;
+			}
+			return this.mvn.execDev(this.path, "-P ${this.workflow.getProperty("REPOS")},${cnf.profiles} ${cnf.goals} -pl=${modPath}");
+		}
+		modPath = this.modulePath == null ? this.path : this.modulePath;
+		if(modulePath != null) {
+			cnf.module = modPath + '/' + cnf.module;
+		}
+		return this.parent.getVersion(cnf);
 	}
 
 	public void info(boolean interate = true) {
