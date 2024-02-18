@@ -65,7 +65,7 @@ class PipelineBuilder implements Serializable {
 
 			return [
 				(nameTxt): {
-					this.workflow.stage(nameTxt) {
+					//this.workflow.stage(nameTxt) {
 						block.resolveStrategy = Closure.DELEGATE_ONLY;
 						block.delegate = this;
 						if (whenValue) {
@@ -82,7 +82,7 @@ class PipelineBuilder implements Serializable {
 								}
 							}
 						}
-					}
+					//}
 				}
 			];
 		}
