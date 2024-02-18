@@ -79,11 +79,15 @@ class PipelineBuilder implements Serializable {
 	}
 
 	public Map<String,Closure> forEachProject(List<String> ids, Map<String,Closure> config = [:], Closure block) {
+		workflow.echo("TEST 1 -----------------------");
 		Closure filter = config.filter instanceof Closure ? config.filter : { p -> true };
+		workflow.echo("TEST 2 -----------------------");
 		config.filter = { p ->
+			workflow.echo("TEST 2.1 -----------------------");
 			String id = p.getId();
 			return ids.any { id.equals(it) } && filter(p);
 		}
+		workflow.echo("TEST 3 -----------------------");
 		return forEachProject(config, block);
 	}
 
