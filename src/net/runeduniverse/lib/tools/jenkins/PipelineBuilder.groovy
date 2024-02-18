@@ -62,17 +62,17 @@ class PipelineBuilder implements Serializable {
 			if(whenValue == null) {
 				whenValue = false;
 			}
+			Map cnf = [:];
+			block.resolveStrategy = Closure.OWNER_FIRST;
+			block.delegate = cnf;
 
 			return [
 				(nameTxt): {
-					this.workflow.stage(nameTxt) {
-						block.resolveStrategy = Closure.DELEGATE_ONLY;
-						block.delegate = delegate;
-						if (whenValue) {
-							block(project);
-						} else {
-							Utils.markStageSkippedForConditional(nameTxt);
-						}
+					block.delegate.post = delegate.post;
+					if (whenValue) {
+						block(project);
+					} else {
+						Utils.markStageSkippedForConditional(nameTxt);
 					}
 				}
 			];
