@@ -68,7 +68,7 @@ class PipelineBuilder implements Serializable {
 
 			return [
 				(nameTxt): {
-					this.workflow.stage {
+					this.workflow.stage(nameTxt) {
 						if (whenValue) {
 							block(project);
 						} else {
