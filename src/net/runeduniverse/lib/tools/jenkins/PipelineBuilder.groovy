@@ -47,7 +47,7 @@ class PipelineBuilder implements Serializable {
 		return this.projects.collect { it.value };
 	}
 
-	public Map<String,Closure> forEachProject(Map<String,Closure> config = [filter: { p -> true }, when : { p -> true }, name : { p -> p.getName() }], Closure block){
+	public Map<String,Closure> forEachProject(Map<String,Closure> config = [filter: { p -> true }, when : { p -> true }, name : { p -> p.getName() }], Closure block) {
 		Closure filter = config.filter instanceof Closure ? config.filter : { p -> true };
 		return this.projects.collect {
 			it.value
@@ -76,6 +76,15 @@ class PipelineBuilder implements Serializable {
 				}
 			];
 		}
+	}
+
+	public Map<String,Closure> forEachProject(List<String> ids, Map<String,Closure> config = [:], Closure block) {
+		Closure filter = config.filter instanceof Closure ? config.filter : { p -> true };
+		config.filter = { p ->
+			String id = p.getId();
+			return ids.any { id.equals(it) } && filter(p);
+		}
+		return forEachProject(config, block);
 	}
 
 	public boolean hasChangedProjects() {
