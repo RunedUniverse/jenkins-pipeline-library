@@ -1,5 +1,7 @@
 package net.runeduniverse.lib.tools.jenkins;
 
+import org.jenkinsci.plugins.pipeline.modeldefinition.Utils;
+
 class PipelineBuilder implements Serializable {
 
 	def workflow;
@@ -40,11 +42,37 @@ class PipelineBuilder implements Serializable {
 	public void resolveResources() {
 		this.projects.each { it.value.resolveResources(); }
 	}
-	
+
 	public List<Project> collectProjects(){
-		List<Project> list = new LinkedList();
-		this.projects.each { list.add(it.value) }
-		return list;
+		return this.projects.collect { it.value };
+	}
+
+	public Map<String,Closure> forEachProject(Map<String,Closure> config = [when : { p -> true }, name : { p -> p.getName() }], Closure block){
+		return this.projects.collect {
+			it.value
+		}.collectEntries { project ->
+			String nameTxt = config.name instanceof Closure ? config.name(project) : project.getName();
+			if(nameTxt == null) {
+				nameTxt = project.getId();
+			}
+			Boolean whenValue = config.when instanceof Closure ? config.when(project) : true;
+			if(whenValue == null) {
+				whenValue = false;
+			}
+			Map cnf = [:];
+			block.resolveStrategy = Closure.OWNER_FIRST;
+			block.delegate = cnf;
+
+			return [
+				(nameTxt): {
+					if (whenValue) {
+						block(project);
+					} else {
+						Utils.markStageSkippedForConditional(nameTxt);
+					}
+				}
+			];
+		}
 	}
 
 	public boolean hasChangedProjects() {

@@ -150,6 +150,8 @@ class MavenProject implements Project {
 		this.mvn.resolveDependencies(this.path);
 	}
 
+	// mark with @NonCPS so Jenkins doesn't try transform it
+	// @NonCPS can't execute Pipeline steps!!!
 	@NonCPS
 	private List<String> toStringList(Object obj){
 		List<String> result = new LinkedList();
