@@ -1,5 +1,8 @@
 package net.runeduniverse.lib.tools.jenkins;
 
+@Grab('net.runeduniverse.lib.utils:utils-common:1.1.0')
+import net.runeduniverse.lib.utils.common.StringUtils;
+
 class Maven implements BuildTool {
 
 	protected final Object workflow;
@@ -25,44 +28,50 @@ class Maven implements BuildTool {
 		return new MavenProject(this, conf);
 	}
 
-	public String exec(String path, String cmd) {
+	public String exec(String path, String cmd, String args = null) {
+		if(StringUtils.isBlank(args)) {
+			args = "";
+		}
 		String result;
 		this.workflow.dir(path: path) {
 			result = this.workflow.sh(
 					returnStdout: true,
-					script: "${this.workflow.tool this.tool}/bin/mvn ${cmd}"
+					script: "${this.workflow.tool this.tool}/bin/mvn ${args} ${cmd}"
 					);
 		};
 		return result;
 	}
 
-	public String execDev(String path, String cmd) {
+	public String execDev(String path, String cmd, String args = null) {
 		String globalSettingsFile = this.workflow.getProperty("GLOBAL_MAVEN_SETTINGS");
-		if(globalSettingsFile == null) {
+		if(StringUtils.isBlank(globalSettingsFile)) {
 			globalSettingsFile = "";
 		} else {
 			globalSettingsFile = "-gs " + globalSettingsFile;
 		}
 
 		String settingsFile = this.workflow.getProperty("MAVEN_SETTINGS");
-		if(settingsFile == null) {
+		if(StringUtils.isBlank(settingsFile)) {
 			settingsFile = "";
 		} else {
 			settingsFile = "-s " + settingsFile;
 		}
 
 		String toolchains = this.workflow.getProperty("MAVEN_TOOLCHAINS");
-		if(toolchains == null) {
+		if(StringUtils.isBlank(toolchains)) {
 			toolchains = "";
 		} else {
 			toolchains = "--global-toolchains " + toolchains;
+		}
+		if(StringUtils.isBlank(args)) {
+			args = "";
 		}
 
 		String result;
 		this.workflow.dir(path: path) {
 			result = this.workflow.sh(
 					returnStdout: true,
-					script: "${this.workflow.tool this.tool}/bin/mvn ${globalSettingsFile} ${settingsFile} ${toolchains} ${cmd}"
+					script: "${this.workflow.tool this.tool}/bin/mvn ${globalSettingsFile} ${settingsFile} ${toolchains} ${args} ${cmd}"
 					);
 		};
 		return result;

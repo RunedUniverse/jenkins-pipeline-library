@@ -13,6 +13,8 @@ class MavenProject implements Project {
 	private String path = ".";
 	private String modulePath = null;
 	private Boolean changed = null;
+	private boolean active = true;
+	private boolean bom = false;
 	private MavenProject parent = null;
 	private List<MavenProject> modules = new LinkedList();
 
@@ -27,6 +29,12 @@ class MavenProject implements Project {
 		this.name = conf.name;
 		this.path = conf.path;
 		this.modulePath = conf.modulePath;
+		if(conf.active != null) {
+			this.active = conf.active == true;
+		}
+		if(conf.bom != null) {
+			this.bom = conf.bom == true;
+		}
 	}
 
 	////////////////////////////////////////////////////////////
@@ -45,8 +53,20 @@ class MavenProject implements Project {
 		return this.path;
 	}
 
+	public boolean isParent() {
+		return this.parent == null;
+	}
+
 	public boolean hasChanged() {
 		return this.changed == null ? true : this.changed;
+	}
+
+	public boolean isActive() {
+		return this.active;
+	}
+
+	public boolean isBOM() {
+		return this.bom;
 	}
 
 	////////////////////////////////////////////////////////////
@@ -69,6 +89,10 @@ class MavenProject implements Project {
 
 	public void setChanged(boolean changed) {
 		this.changed = changed;
+	}
+
+	public void setActive(boolean active) {
+		this.active = active;
 	}
 
 	public MavenProject setModulePath(String modulePath) {
@@ -126,32 +150,41 @@ class MavenProject implements Project {
 		this.mvn.resolveDependencies(this.path);
 	}
 
+	private List<String> toStringList(Object obj){
+		List<String> result = new LinkedList();
+		if(obj instanceof List) {
+			result.addAll(obj.toUnique().grep {
+				it instanceof String && !StringUtils.isBlank(it)
+			}.collect {
+				it.trim()
+			});
+		} else {
+			if(obj instanceof String && !StringUtils.isBlank(obj)) {
+				result.add(obj.trim());
+			}
+		}
+		return result;
+	}
+
 	public String execDev(Map cnf = [:]) {
+		List<String> modules = toStringList(cnf.modules);
 		if(this.parent == null) {
-			String profiles = ""
-			if(!StringUtils.isBlank(cnf.profiles)) {
-				profiles = cnf.profiles;
-			}
-			String goals = ""
-			if(!StringUtils.isBlank(cnf.goals)) {
-				goals = cnf.goals;
-			}
-			String modules = ""
-			if(!StringUtils.isBlank(cnf.module)) {
-				modules = "-pl=" + cnf.module;
-			}
+			String profiles = toStringList(cnf.profiles).join(",");
+			String goals = toStringList(cnf.goals).join(",");
+			String modulesArg = modules.isEmpty() ? "" : "-pl=" + modules.join(",");
 			this.workflow.echo("path:       " + this.path);
-			return this.mvn.execDev(this.path, "-P ${this.workflow.getProperty("REPOS")},${profiles} ${goals} ${modules}");
+			return this.mvn.execDev(this.path, "-P ${this.workflow.getProperty("REPOS")},${profiles} ${goals} ${modulesArg}");
 		}
 		String modPath = this.modulePath == null ? this.path : this.modulePath;
-		if(cnf.module == null) {
-			modPath = modPath + "/*";
+		if(modules.isEmpty()) {
+			// compile this and all children
+			modules.add(modPath + "/*");
 		} else {
-			if(!cnf.module.equals(".")) {
-				modPath = modPath + '/' + cnf.module;
+			modules = modules.collect {
+				it.equals(".") ? modPath : modPath + '/' + it
 			}
 		}
-		cnf.module = modPath;
+		cnf.modules = modules;
 		return this.parent.execDev(cnf);
 	}
 

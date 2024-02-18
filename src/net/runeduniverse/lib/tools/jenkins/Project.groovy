@@ -10,14 +10,22 @@ interface Project extends Serializable {
 
 	public String getVersion();
 
+	public boolean isParent();
+
 	public boolean hasChanged();
 
+	public boolean isActive();
+
+	public boolean isBOM();
+
 	public void setChanged(boolean changed);
-	
+
+	public void setActive(boolean active);
+
 	public void attachTo(PipelineBuilder builder);
-	
+
 	public void purgeCache();
-	
+
 	public void resolveResources();
 
 	public void info();
