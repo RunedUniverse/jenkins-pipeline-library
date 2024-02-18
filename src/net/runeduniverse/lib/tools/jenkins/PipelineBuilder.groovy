@@ -69,9 +69,18 @@ class PipelineBuilder implements Serializable {
 						block.resolveStrategy = Closure.DELEGATE_ONLY;
 						block.delegate = this;
 						if (whenValue) {
-							block(project);
+							//block(project);
 						} else {
 							Utils.markStageSkippedForConditional(nameTxt);
+						}
+						post {
+							always {
+								dir(path: "${project.getPath()}/target") {
+									archiveArtifacts artifacts: '*.pom', fingerprint: true
+									archiveArtifacts artifacts: '*.asc', fingerprint: true
+									sh 'cp *.pom *.asc ../../target/result/'
+								}
+							}
 						}
 					}
 				}
