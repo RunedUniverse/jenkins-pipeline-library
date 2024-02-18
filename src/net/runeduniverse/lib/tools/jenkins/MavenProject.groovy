@@ -138,6 +138,7 @@ class MavenProject implements Project {
 			if(!StringUtils.isBlank(cnf.goals)) {
 				goals = cnf.goals;
 			}
+			this.workflow.echo("path:       " + this.path);
 			return this.mvn.execDev(this.path, "-P ${this.workflow.getProperty("REPOS")},${profiles} ${goals} -pl=${modPath}");
 		}
 		modPath = this.modulePath == null ? this.path : this.modulePath;
