@@ -47,9 +47,12 @@ class PipelineBuilder implements Serializable {
 		return this.projects.collect { it.value };
 	}
 
-	public Map<String,Closure> forEachProject(Map<String,Closure> config = [when : { p -> true }, name : { p -> p.getName() }], Closure block){
+	public Map<String,Closure> forEachProject(Map<String,Closure> config = [filter: { p -> true }, when : { p -> true }, name : { p -> p.getName() }], Closure block){
+		Closure filter = config.filter instanceof Closure ? config.filter : { p -> true };
 		return this.projects.collect {
 			it.value
+		}.findAll {
+			Boolean.TRUE.equals(filter(it));
 		}.collectEntries { project ->
 			String nameTxt = config.name instanceof Closure ? config.name(project) : project.getName();
 			if(nameTxt == null) {
