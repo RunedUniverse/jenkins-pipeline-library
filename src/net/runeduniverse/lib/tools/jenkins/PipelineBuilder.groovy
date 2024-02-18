@@ -67,7 +67,7 @@ class PipelineBuilder implements Serializable {
 				(nameTxt): {
 					this.workflow.stage(nameTxt) {
 						block.resolveStrategy = Closure.DELEGATE_ONLY;
-						block.delegate = owner;
+						block.delegate = this;
 						if (whenValue) {
 							block(project);
 						} else {
