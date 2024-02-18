@@ -68,7 +68,6 @@ class PipelineBuilder implements Serializable {
 
 			return [
 				(nameTxt): {
-					block.delegate.post = delegate.post;
 					if (whenValue) {
 						block(project);
 					} else {
