@@ -176,7 +176,11 @@ class MavenProject implements Project {
 			String goals = toStringList(cnf.goals).join(",");
 			String modulesArg = modules.isEmpty() ? "" : "-pl=" + modules.join(",");
 			this.workflow.echo("path:       " + this.path);
-			return this.mvn.execDev(this.path, "-P ${this.workflow.getProperty("REPOS")},${profiles} ${goals} ${modulesArg}");
+			return this.mvn.execDev(
+					this.path,
+					"-P ${this.workflow.getProperty("REPOS")},${profiles} ${goals} ${modulesArg}",
+					toStringList(cnf.args).join(" ")
+					);
 		}
 		String modPath = this.modulePath == null ? this.path : this.modulePath;
 		if(modules.isEmpty()) {

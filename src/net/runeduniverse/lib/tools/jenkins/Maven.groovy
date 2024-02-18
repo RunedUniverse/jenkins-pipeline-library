@@ -71,7 +71,7 @@ class Maven implements BuildTool {
 		this.workflow.dir(path: path) {
 			result = this.workflow.sh(
 					returnStdout: true,
-					script: "${this.workflow.tool this.tool}/bin/mvn ${globalSettingsFile} ${settingsFile} ${toolchains} ${args} ${cmd}"
+					script: "${this.workflow.tool this.tool}/bin/mvn ${globalSettingsFile} ${settingsFile} ${toolchains} ${cmd} ${args}"
 					);
 		};
 		return result;
