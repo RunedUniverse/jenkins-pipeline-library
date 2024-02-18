@@ -68,10 +68,12 @@ class PipelineBuilder implements Serializable {
 
 			return [
 				(nameTxt): {
-					if (whenValue) {
-						block(project);
-					} else {
-						Utils.markStageSkippedForConditional(nameTxt);
+					this.workflow.stage {
+						if (whenValue) {
+							block(project);
+						} else {
+							Utils.markStageSkippedForConditional(nameTxt);
+						}
 					}
 				}
 			];
