@@ -150,6 +150,7 @@ class MavenProject implements Project {
 		this.mvn.resolveDependencies(this.path);
 	}
 
+	@NonCPS
 	private List<String> toStringList(Object obj){
 		List<String> result = new LinkedList();
 		if(obj instanceof List) {
