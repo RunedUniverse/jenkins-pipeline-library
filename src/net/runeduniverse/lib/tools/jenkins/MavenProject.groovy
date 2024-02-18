@@ -144,8 +144,12 @@ class MavenProject implements Project {
 			return this.mvn.execDev(this.path, "-P ${this.workflow.getProperty("REPOS")},${profiles} ${goals} ${modules}");
 		}
 		String modPath = this.modulePath == null ? this.path : this.modulePath;
-		if(cnf.module != null) {
-			modPath = modPath + '/' + cnf.module;
+		if(cnf.module == null) {
+			modPath = modPath + "/*";
+		} else {
+			if(!cnf.module.equals(".")) {
+				modPath = modPath + '/' + cnf.module;
+			}
 		}
 		cnf.module = modPath;
 		return this.parent.execDev(cnf);
