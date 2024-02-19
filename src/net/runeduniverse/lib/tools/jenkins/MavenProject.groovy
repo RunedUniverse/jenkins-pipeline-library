@@ -175,7 +175,7 @@ class MavenProject implements Project {
 		return result;
 	}
 
-	//@NonCPS
+	@NonCPS
 	public List<MavenProject> getModules(Map config = [:]) {
 		Closure filter = config.filter instanceof Closure ? config.filter : { p -> true };
 		// includeSelf is only applicable to the outermost project
