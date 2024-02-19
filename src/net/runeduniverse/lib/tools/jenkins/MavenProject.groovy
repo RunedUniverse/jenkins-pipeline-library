@@ -175,24 +175,30 @@ class MavenProject implements Project {
 		return result;
 	}
 
-	@NonCPS
+	// you must not use recursion -> it errors out!
 	public List<MavenProject> getModules(Map config = [:]) {
 		Closure filter = config.filter instanceof Closure ? config.filter : { p -> true };
 		// includeSelf is only applicable to the outermost project
-		boolean includeSelf = Boolean.TRUE.equals(config.remove("includeSelf"));
 		List<MavenProject> results = new LinkedList();
+		List<MavenProject> searchList = new LinkedList();
+		List<MavenProject> moduleList = new LinkedList();
 
-		if(includeSelf && Boolean.TRUE.equals(filter(this))) {
+		if(Boolean.TRUE.equals(config.includeSelf)) {
 			results.add(this);
 		}
 
-		for (m in this.modules) {
-			if(Boolean.TRUE.equals(filter(m))) {
-				results.add(m);
+		searchList.addAll(this.modules);
+
+		while (!searchList.isEmpty()) {
+			for (entry in searchList) {
+				results.add(entry);
+				moduleList.addAll(entry.modules);
 			}
-			results.addAll(m.getModules(config));
+			searchList.clear();
+			searchList.addAll(moduleList);
 		}
-		return results;
+
+		return results.toUnique().findAll { Boolean.TRUE.equals(filter(this)) }
 	}
 
 	public List<Project> collectProjects(Map config) {
