@@ -172,7 +172,8 @@ class MavenProject implements Project {
 		}
 		return result;
 	}
-
+	
+	@NonCPS
 	public List<MavenProject> getModules(Map config = [:]) {
 		Closure filter = config.filter instanceof Closure ? config.filter : { p -> true };
 		// includeSelf is only applicable to the outermost project
@@ -192,11 +193,11 @@ class MavenProject implements Project {
 		return results;
 	}
 
-	@Override
 	public List<Project> collectProjects(Map config) {
 		return getModules(config);
 	}
-
+	
+	@NonCPS
 	public List<String> getModulePaths(Map config = [:]) {
 		Closure filter = config.filter instanceof Closure ? config.filter : { p -> true };
 		// includeSelf is only applicable to the outermost project
