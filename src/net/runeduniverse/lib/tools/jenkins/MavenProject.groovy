@@ -176,6 +176,7 @@ class MavenProject implements Project {
 	}
 
 	// you must not use recursion -> it errors out!
+	@NonCPS
 	public List<MavenProject> getModules(Map config = [:]) {
 		Closure filter = config.filter instanceof Closure ? config.filter : { p -> true };
 		// includeSelf is only applicable to the outermost project
