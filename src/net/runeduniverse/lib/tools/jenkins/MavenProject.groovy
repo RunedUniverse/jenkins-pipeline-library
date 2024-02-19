@@ -204,9 +204,11 @@ class MavenProject implements Project {
 
 	public List<MavenProject> getModules(Map config = [:]) {
 		Closure filter = config.filter instanceof Closure ? config.filter : { p -> true };
-		return _getModules(Boolean.TRUE.equals(config.includeSelf)).findAll {
-			Boolean.TRUE.equals(filter(it))
-		};
+		return _getModules(
+				Boolean.TRUE.equals(config.includeSelf)
+			).findAll {
+				Boolean.TRUE.equals(filter(it))
+			};
 	}
 
 	public List<Project> collectProjects(Map config) {
@@ -214,29 +216,38 @@ class MavenProject implements Project {
 	}
 
 	@NonCPS
+	protected Map<MavenProject, String> _getModulePaths(boolean includeSelf) {
+		Map<MavenProject, String> results = new LinkedList();
+		List<MavenProject> searchList = new LinkedList();
+		List<MavenProject> moduleList = new LinkedList();
+
+		if(includeSelf) {
+			results.put(this, ".");
+		}
+
+		searchList.addAll(this.modules);
+
+		while (!searchList.isEmpty()) {
+			for (entry in searchList) {
+				results.put(entry, (this == entry.parent ? "" : results.get(entry.parent) + "/") + entry.getModulePath())
+				moduleList.addAll(entry.modules);
+			}
+			searchList.clear();
+			searchList.addAll(moduleList);
+		}
+
+		return results;
+	}
+
 	public List<String> getModulePaths(Map config = [:]) {
 		Closure filter = config.filter instanceof Closure ? config.filter : { p -> true };
-		// includeSelf is only applicable to the outermost project
-		boolean includeSelf = Boolean.TRUE.equals(config.remove("includeSelf"));
-		String modPath = getModulePath();
-		List<String> paths = new LinkedList();
-
-		for (m in this.modules) {
-			if(Boolean.TRUE.equals(filter(m))) {
-				paths.add(m.getModulePath());
-			}
-			paths.addAll(m.getModulePaths(config));
-		}
-
-		List<String> results = new LinkedList();
-		// ensure that the project is mentioned before its modules
-		if(includeSelf && Boolean.TRUE.equals(filter(this))) {
-			results.add(this.parent == null ? "." : modPath);
-		}
-		results.addAll(this.parent == null ? paths : paths.collect {
-			modPath + '/' + it
-		});
-		return results;
+		return _getModulePaths(
+				Boolean.TRUE.equals(config.includeSelf)
+			).findAll { 
+				Boolean.TRUE.equals(filter(it.key))
+			}.collect { 
+				it.value
+			};
 	}
 
 	public String execDev(Map cnf = [:]) {
