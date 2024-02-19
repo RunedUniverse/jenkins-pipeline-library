@@ -111,7 +111,6 @@ class MavenProject implements Project {
 
 	////////////////////////////////////////////////////////////
 	
-	@NonCPS
 	public MavenProject addModule(MavenProject project) {
 		project.setParent(this);
 		this.modules.add(project);
@@ -125,7 +124,6 @@ class MavenProject implements Project {
 		return project;
 	}
 
-	@NonCPS
 	public void attachTo(PipelineBuilder builder) {
 		builder.attachProject(this);
 
