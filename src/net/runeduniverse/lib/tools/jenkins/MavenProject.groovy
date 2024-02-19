@@ -237,7 +237,7 @@ class MavenProject implements Project {
 			searchList.addAll(moduleList);
 		}
 
-		results.put(this, ". size: "+results.size());
+		results.put(this, ". | modules.size: "+this.modules.size());
 		return results;
 	}
 
