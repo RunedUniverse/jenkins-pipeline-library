@@ -110,7 +110,7 @@ class MavenProject implements Project {
 	}
 
 	////////////////////////////////////////////////////////////
-	
+
 	public MavenProject addModule(MavenProject project) {
 		project.setParent(this);
 		this.modules.add(project);
@@ -119,18 +119,15 @@ class MavenProject implements Project {
 
 	public MavenProject addModule(Map conf) {
 		MavenProject project = new MavenProject(this.mvn, conf);
-		this.workflow.echo("1: modules.size: ${modules.size()}");
 		this.addModule(project);
-		this.workflow.echo("2: modules.size: ${modules.size()}");
-		this.workflow.echo("${project.id} added to ${id}");
 		return project;
 	}
 
 	public void attachTo(PipelineBuilder builder) {
 		builder.attachProject(this);
 
-		this.modules.each {
-			it.attachTo(builder);
+		for (m in this.modules) {
+			m.attachTo(builder);
 		}
 	}
 
@@ -239,7 +236,6 @@ class MavenProject implements Project {
 			searchList.addAll(moduleList);
 		}
 
-		results.put(this, ". | id: "+this.id+" | modules.size: "+this.modules.size());
 		return results;
 	}
 
