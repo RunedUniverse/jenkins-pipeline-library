@@ -122,10 +122,12 @@ class MavenProject implements Project {
 		return project;
 	}
 
+	@NonCPS
 	public void attachTo(PipelineBuilder builder) {
 		builder.attachProject(this);
-		this.modules.each {
-			it.attachTo(builder);
+
+		for (m in this.modules) {
+			m.attachTo(builder);
 		}
 	}
 
@@ -179,7 +181,7 @@ class MavenProject implements Project {
 		// includeSelf is only applicable to the outermost project
 		boolean includeSelf = Boolean.TRUE.equals(config.remove("includeSelf"));
 		List<MavenProject> results = new LinkedList();
-		results.add("TEEEST")
+		results.add("TEEEST");
 
 		if(includeSelf && Boolean.TRUE.equals(filter(this))) {
 			results.add(this);
