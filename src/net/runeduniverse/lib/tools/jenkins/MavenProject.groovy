@@ -173,14 +173,25 @@ class MavenProject implements Project {
 		return result;
 	}
 
-	public List<MavenProject> getModules(Closure filter = { p -> true }) {
-		if(filter == null) {
-			filter = { p -> true };
+	public List<MavenProject> getModules(Map config = [:]) {
+		Closure filter = config.filter instanceof Closure ? config.filter : { p -> true };
+		// includeSelf is only applicable to the outermost project
+		boolean includeSelf = Boolean.TRUE.equals(config.remove("includeSelf"));
+		List<MavenProject> results = new LinkedList();
+
+		if(includeSelf && Boolean.TRUE.equals(filter(this))) {
+			results.add(this);
 		}
-		return this.modules.findAll {
-			Boolean.TRUE.equals(filter(it));
+
+		this.modules.each {
+			if(Boolean.TRUE.equals(filter(it))) {
+				results.add(it);
+			}
+			results.addAll(it.getModules(config));
 		}
+		return results;
 	}
+
 	public List<String> getModulePaths(Map config = [:]) {
 		Closure filter = config.filter instanceof Closure ? config.filter : { p -> true };
 		// includeSelf is only applicable to the outermost project
@@ -197,7 +208,7 @@ class MavenProject implements Project {
 
 		List<String> results = new LinkedList();
 		// ensure that the project is mentioned before its modules
-		if(includeSelf) {
+		if(includeSelf && Boolean.TRUE.equals(filter(this))) {
 			results.add(modPath);
 		}
 		results.addAll(paths.collect {
