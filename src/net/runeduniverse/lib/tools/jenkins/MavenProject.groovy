@@ -199,7 +199,7 @@ class MavenProject implements Project {
 			searchList.addAll(moduleList);
 		}
 
-		return results.toUnique().findAll { Boolean.TRUE.equals(filter(this)) }
+		return results.toUnique().findAll { Boolean.TRUE.equals(filter(it)) }
 	}
 
 	public List<Project> collectProjects(Map config) {
