@@ -53,6 +53,10 @@ class MavenProject implements Project {
 		return this.path;
 	}
 
+	public String getModulePath() {
+		return this.modulePath == null ? this.path : this.modulePath;
+	}
+
 	public boolean isParent() {
 		return this.parent == null;
 	}
@@ -169,6 +173,39 @@ class MavenProject implements Project {
 		return result;
 	}
 
+	public List<MavenProject> getModules(Closure filter = { p -> true }) {
+		if(filter == null) {
+			filter = { p -> true };
+		}
+		return this.modules.findAll {
+			Boolean.TRUE.equals(filter(it));
+		}
+	}
+	public List<String> getModulePaths(Map config = [:]) {
+		Closure filter = config.filter instanceof Closure ? config.filter : { p -> true };
+		// includeSelf is only applicable to the outermost project
+		boolean includeSelf = Boolean.TRUE.equals(config.remove("includeSelf"));
+		String modPath = getModulePath();
+		List<String> paths = new LinkedList();
+
+		this.modules.each {
+			if(Boolean.TRUE.equals(filter(it))) {
+				paths.add(it.getModulePath());
+			}
+			paths.addAll(it.getModulePaths(config));
+		}
+
+		List<String> results = new LinkedList();
+		// ensure that the project is mentioned before its modules
+		if(includeSelf) {
+			results.add(modPath);
+		}
+		results.addAll(paths.collect {
+			modPath + '/' + it
+		});
+		return results;
+	}
+
 	public String execDev(Map cnf = [:]) {
 		List<String> modules = toStringList(cnf.modules);
 		if(this.parent == null || Boolean.TRUE.equals(cnf.skipParent)) {
@@ -187,10 +224,10 @@ class MavenProject implements Project {
 					toStringList(cnf.args).join(" ")
 					);
 		}
-		String modPath = this.modulePath == null ? this.path : this.modulePath;
+		String modPath = getModulePath();
 		if(modules.isEmpty()) {
-			// compile this and all children
-			modules.add(modPath + "/*");
+			// select this and all children
+			modules.addAll(getModulePaths([ includeSelf: true ]));
 		} else {
 			modules = modules.collect {
 				it.equals(".") ? modPath : modPath + '/' + it
