@@ -172,7 +172,7 @@ class MavenProject implements Project {
 		}
 		return result;
 	}
-	
+
 	@NonCPS
 	public List<MavenProject> getModules(Map config = [:]) {
 		Closure filter = config.filter instanceof Closure ? config.filter : { p -> true };
@@ -196,7 +196,7 @@ class MavenProject implements Project {
 	public List<Project> collectProjects(Map config) {
 		return getModules(config);
 	}
-	
+
 	@NonCPS
 	public List<String> getModulePaths(Map config = [:]) {
 		Closure filter = config.filter instanceof Closure ? config.filter : { p -> true };
@@ -205,11 +205,11 @@ class MavenProject implements Project {
 		String modPath = getModulePath();
 		List<String> paths = new LinkedList();
 
-		this.modules.each {
-			if(Boolean.TRUE.equals(filter(it))) {
-				paths.add(it.getModulePath());
+		for (m in this.modules) {
+			if(Boolean.TRUE.equals(filter(m))) {
+				paths.add(m.getModulePath());
 			}
-			paths.addAll(it.getModulePaths(config));
+			paths.addAll(m.getModulePaths(config));
 		}
 
 		List<String> results = new LinkedList();
