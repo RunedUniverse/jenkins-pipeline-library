@@ -183,11 +183,11 @@ class MavenProject implements Project {
 			results.add(this);
 		}
 
-		this.modules.each {
-			if(Boolean.TRUE.equals(filter(it))) {
-				results.add(it);
+		for (m in this.modules) {
+			if(Boolean.TRUE.equals(filter(m))) {
+				results.add(m);
 			}
-			results.addAll(it.getModules(config));
+			results.addAll(m.getModules(config));
 		}
 		return results;
 	}
