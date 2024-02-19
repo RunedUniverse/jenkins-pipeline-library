@@ -218,7 +218,7 @@ class MavenProject implements Project {
 
 	@NonCPS
 	protected Map<MavenProject, String> _getModulePaths(boolean includeSelf) {
-		Map<MavenProject, String> results = new LinkedList();
+		Map<MavenProject, String> results = new LinkedHashMap();
 		List<MavenProject> searchList = new LinkedList();
 		List<MavenProject> moduleList = new LinkedList();
 
