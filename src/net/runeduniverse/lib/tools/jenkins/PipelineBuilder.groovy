@@ -49,6 +49,7 @@ class PipelineBuilder implements Serializable {
 
 	public Map<String,Closure> forEachProject(Map<String,Closure> config = [filter: { p -> true }, when : { p -> true }, name : { p -> p.getName() }], Closure block) {
 		Closure filter = config.filter instanceof Closure ? config.filter : { p -> true };
+		Closure when = config.when instanceof Closure ? config.when : { p -> true };
 		return this.projects.collect {
 			it.value
 		}.findAll {
@@ -58,10 +59,7 @@ class PipelineBuilder implements Serializable {
 			if(nameTxt == null) {
 				nameTxt = project.getId();
 			}
-			Boolean whenValue = config.when instanceof Closure ? config.when(project) : true;
-			if(whenValue == null) {
-				whenValue = false;
-			}
+			Boolean whenValue = Boolean.TRUE.equals(when(project));
 			Map cnf = [:];
 			block.resolveStrategy = Closure.OWNER_FIRST;
 			block.delegate = cnf;
