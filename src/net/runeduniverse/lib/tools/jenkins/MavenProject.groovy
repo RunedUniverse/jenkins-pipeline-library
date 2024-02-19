@@ -202,6 +202,7 @@ class MavenProject implements Project {
 		Closure filter = config.filter instanceof Closure ? config.filter : { p -> true };
 		// includeSelf is only applicable to the outermost project
 		boolean includeSelf = Boolean.TRUE.equals(config.remove("includeSelf"));
+		boolean isParent = isParent();
 		String modPath = getModulePath();
 		List<String> paths = new LinkedList();
 
@@ -215,9 +216,9 @@ class MavenProject implements Project {
 		List<String> results = new LinkedList();
 		// ensure that the project is mentioned before its modules
 		if(includeSelf && Boolean.TRUE.equals(filter(this))) {
-			results.add(modPath);
+			results.add(isParent ? "." : modPath);
 		}
-		results.addAll(paths.collect {
+		results.addAll(isParent ? paths : paths.collect {
 			modPath + '/' + it
 		});
 		return results;
