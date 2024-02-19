@@ -171,14 +171,19 @@ class MavenProject implements Project {
 
 	public String execDev(Map cnf = [:]) {
 		List<String> modules = toStringList(cnf.modules);
-		if(this.parent == null) {
-			String profiles = toStringList(cnf.profiles).join(",");
+		if(this.parent == null || Boolean.TRUE.equals(cnf.skipParent)) {
+			List<String> profiles = new LinkedList();
+			if(!Boolean.TRUE.equals(cnf.skipRepos)) {
+				profiles.add(this.workflow.getProperty("REPOS"));
+			}
+			profiles.addAll(toStringList(cnf.profiles));
+			String profilesArg = profiles.isEmpty() ? "" : "-P " + profiles.join(",");
 			String goals = toStringList(cnf.goals).join(",");
 			String modulesArg = modules.isEmpty() ? "" : "-pl=" + modules.join(",");
 			this.workflow.echo("path:       " + this.path);
 			return this.mvn.execDev(
 					this.path,
-					"-P ${this.workflow.getProperty("REPOS")},${profiles} ${goals} ${modulesArg}",
+					"${profilesArg} ${goals} ${modulesArg}",
 					toStringList(cnf.args).join(" ")
 					);
 		}
