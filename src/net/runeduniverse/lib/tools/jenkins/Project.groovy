@@ -18,6 +18,8 @@ interface Project extends Serializable {
 
 	public boolean isBOM();
 
+	public List<Project> collectProjects(Map config);
+
 	public void setChanged(boolean changed);
 
 	public void setActive(boolean active);
