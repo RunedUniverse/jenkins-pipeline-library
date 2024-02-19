@@ -52,7 +52,7 @@ class PipelineBuilder implements Serializable {
 		Closure when = config.when instanceof Closure ? config.when : { p -> true };
 		return this.projects.collect {
 			it.value
-		}.grep {
+		}.findAll {
 			Boolean.TRUE.equals(filter(it));
 		}.collectEntries { project ->
 			String nameTxt = config.name instanceof Closure ? config.name(project) : project.getName();
