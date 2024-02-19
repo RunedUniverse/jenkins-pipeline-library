@@ -179,6 +179,7 @@ class MavenProject implements Project {
 		// includeSelf is only applicable to the outermost project
 		boolean includeSelf = Boolean.TRUE.equals(config.remove("includeSelf"));
 		List<MavenProject> results = new LinkedList();
+		results.add("TEEEST")
 
 		if(includeSelf && Boolean.TRUE.equals(filter(this))) {
 			results.add(this);
