@@ -148,7 +148,7 @@ class MavenProject implements Project {
 
 	public String getVersion() {
 		if(this.version == null) {
-			this.version = getVersion(null);
+			this.version = getVersion(".");
 		}
 		return this.version;
 	}
@@ -159,7 +159,7 @@ class MavenProject implements Project {
 
 	public String getPackagingProcedure() {
 		if(this.packagingProcedure == null) {
-			this.packagingProcedure = getVersion(null);
+			this.packagingProcedure = getVersion(".");
 		}
 		return this.packagingProcedure;
 	}
