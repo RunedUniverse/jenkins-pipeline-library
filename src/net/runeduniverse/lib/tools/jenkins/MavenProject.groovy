@@ -119,9 +119,9 @@ class MavenProject implements Project {
 
 	public MavenProject addModule(Map conf) {
 		MavenProject project = new MavenProject(this.mvn, conf);
-		this.workflow.echo("1: modules.size: ${this.modules.size()}");
+		this.workflow.echo("1: modules.size: ${modules.size()}");
 		this.addModule(project);
-		this.workflow.echo("2: modules.size: ${this.modules.size()}");
+		this.workflow.echo("2: modules.size: ${modules.size()}");
 		this.workflow.echo("${project.id} added to ${id}");
 		return project;
 	}
