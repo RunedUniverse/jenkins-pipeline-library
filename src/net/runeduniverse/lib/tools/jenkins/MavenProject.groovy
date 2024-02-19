@@ -12,6 +12,8 @@ class MavenProject implements Project {
 	private String name = "";
 	private String path = ".";
 	private String modulePath = null;
+	private String packagingProcedure = null;
+	private String version = null;
 	private Boolean changed = null;
 	private boolean active = true;
 	private boolean bom = false;
@@ -131,17 +133,39 @@ class MavenProject implements Project {
 		}
 	}
 
-	public String getVersion(modulePath = null) {
+	public String eval(String expression, String modulePath = null) {
 		String modPath = modulePath == null ? "." : modulePath;
 
 		if(this.parent == null) {
-			return this.mvn.eval("project.version", this.path, modPath);
+			return this.mvn.eval(expression, this.path, modPath);
 		}
 		modPath = this.modulePath == null ? this.path : this.modulePath;
 		if(modulePath != null) {
 			modPath = modPath + '/' + modulePath;
 		}
 		return this.parent.getVersion(modPath);
+	}
+
+	public String getVersion() {
+		if(this.version == null) {
+			this.version = getVersion(null);
+		}
+		return this.version;
+	}
+
+	public String getVersion(String modulePath) {
+		return eval("project.version", modulePath);
+	}
+
+	public String getPackagingProcedure() {
+		if(this.packagingProcedure == null) {
+			this.packagingProcedure = getVersion(null);
+		}
+		return this.packagingProcedure;
+	}
+
+	public String getPackagingProcedure(String modulePath) {
+		return eval("project.packaging", modulePath);
 	}
 
 	public void purgeCache() {
@@ -287,7 +311,7 @@ class MavenProject implements Project {
 		this.workflow.echo("path:       " + this.path);
 		if(this.modulePath != null)
 			this.workflow.echo("modulePath: " + this.modulePath);
-		this.workflow.echo("version:    " + this.path);
+		this.workflow.echo("version:    " + this.getVersion());
 		this.workflow.echo("changed:    " + this.changed == null ? "????" : this.changed.toString());
 
 		if(interate) {
