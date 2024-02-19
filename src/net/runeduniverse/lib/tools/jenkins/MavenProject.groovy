@@ -132,21 +132,19 @@ class MavenProject implements Project {
 			m.attachTo(builder);
 		}
 	}
-	
+
 	@NonCPS
 	public String eval(String expression, String modulePath = null) {
-		String modPath = modulePath == null ? "." : modulePath;
-
 		if(this.parent == null) {
-			return this.mvn.eval(expression, this.path, modPath);
+			return this.mvn.eval(expression, this.path, modulePath == null ? "." : modulePath);
 		}
-		modPath = this.modulePath == null ? this.path : this.modulePath;
-		if(modulePath != null) {
+		String modPath = getModulePath();
+		if(modulePath != null && !".".equals(modulePath)) {
 			modPath = modPath + '/' + modulePath;
 		}
 		return this.parent.getVersion(modPath);
 	}
-	
+
 	@NonCPS
 	public String getVersion() {
 		if(this.version == null) {
@@ -154,20 +152,20 @@ class MavenProject implements Project {
 		}
 		return this.version;
 	}
-	
+
 	@NonCPS
 	public String getVersion(String modulePath) {
 		return eval("project.version", modulePath);
 	}
-	
+
 	@NonCPS
 	public String getPackagingProcedure() {
 		if(this.packagingProcedure == null) {
-			this.packagingProcedure = getVersion(".");
+			this.packagingProcedure = getPackagingProcedure(".");
 		}
 		return this.packagingProcedure;
 	}
-	
+
 	@NonCPS
 	public String getPackagingProcedure(String modulePath) {
 		return eval("project.packaging", modulePath);
