@@ -52,7 +52,8 @@ class MavenProject implements Project {
 	public String getPath() {
 		return this.path;
 	}
-
+	
+	@NonCPS
 	public String getModulePath() {
 		return this.modulePath == null ? this.path : this.modulePath;
 	}
