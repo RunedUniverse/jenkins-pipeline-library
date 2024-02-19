@@ -16,7 +16,7 @@ class MavenProject implements Project {
 	private boolean active = true;
 	private boolean bom = false;
 	private MavenProject parent = null;
-	private List<MavenProject> modules = new LinkedList();
+	protected List<MavenProject> modules = new LinkedList();
 
 	MavenProject(Maven mvn){
 		this.mvn = mvn;
@@ -52,7 +52,7 @@ class MavenProject implements Project {
 	public String getPath() {
 		return this.path;
 	}
-	
+
 	@NonCPS
 	public String getModulePath() {
 		return this.modulePath == null ? this.path : this.modulePath;
@@ -207,9 +207,9 @@ class MavenProject implements Project {
 		Closure filter = config.filter instanceof Closure ? config.filter : { p -> true };
 		return _getModules(
 				Boolean.TRUE.equals(config.includeSelf)
-			).findAll {
-				Boolean.TRUE.equals(filter(it))
-			};
+				).findAll {
+					Boolean.TRUE.equals(filter(it))
+				};
 	}
 
 	public List<Project> collectProjects(Map config) {
@@ -244,11 +244,11 @@ class MavenProject implements Project {
 		Closure filter = config.filter instanceof Closure ? config.filter : { p -> true };
 		return _getModulePaths(
 				Boolean.TRUE.equals(config.includeSelf)
-			).findAll { 
-				Boolean.TRUE.equals(filter(it.key))
-			}.collect { 
-				it.value
-			};
+				).findAll {
+					Boolean.TRUE.equals(filter(it.key))
+				}.collect {
+					it.value
+				};
 	}
 
 	public String execDev(Map cnf = [:]) {
