@@ -110,7 +110,8 @@ class MavenProject implements Project {
 	}
 
 	////////////////////////////////////////////////////////////
-
+	
+	@NonCPS
 	public MavenProject addModule(MavenProject project) {
 		project.setParent(this);
 		this.modules.add(project);
