@@ -16,7 +16,7 @@ class MavenProject implements Project {
 	private boolean active = true;
 	private boolean bom = false;
 	private MavenProject parent = null;
-	protected List<MavenProject> modules = new LinkedList();
+	private List<MavenProject> modules = new LinkedList();
 
 	MavenProject(Maven mvn){
 		this.mvn = mvn;
@@ -237,7 +237,7 @@ class MavenProject implements Project {
 			searchList.addAll(moduleList);
 		}
 
-		results.put(this, ". | modules.size: "+this.modules.size());
+		results.put(this, ". | id: "+this.id+" | modules.size: "+this.modules.size());
 		return results;
 	}
 
