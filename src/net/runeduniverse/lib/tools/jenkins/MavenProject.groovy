@@ -279,7 +279,7 @@ class MavenProject implements Project {
 	}
 
 	public String execDev(Map cnf = [:]) {
-		List<String> modules = toStringList(cnf.modules);
+		List<String> modulesList = toStringList(cnf.modules);
 		if(this.parent == null || Boolean.TRUE.equals(cnf.skipParent)) {
 			List<String> profiles = new LinkedList();
 			if(!Boolean.TRUE.equals(cnf.skipRepos)) {
@@ -288,7 +288,7 @@ class MavenProject implements Project {
 			profiles.addAll(toStringList(cnf.profiles));
 			String profilesArg = profiles.isEmpty() ? "" : "-P " + profiles.join(",");
 			String goals = toStringList(cnf.goals).join(",");
-			String modulesArg = modules.isEmpty() ? "" : "-pl=" + modules.join(",");
+			String modulesArg = modulesList.isEmpty() ? "" : "-pl=" + modulesList.join(",");
 			this.workflow.echo("path:       " + this.path);
 			return this.mvn.execDev(
 					this.path,
@@ -297,15 +297,15 @@ class MavenProject implements Project {
 					);
 		}
 		String modPath = getModulePath();
-		if(modules.isEmpty()) {
+		if(modulesList.isEmpty()) {
 			// select this and all children
-			modules.addAll(getModulePaths([ includeSelf: true ]));
+			modulesList.addAll(getModulePaths([ includeSelf: true ]));
 		} else {
-			modules = modules.collect {
+			modulesList = modulesList.collect {
 				it.equals(".") ? modPath : modPath + '/' + it
 			}
 		}
-		cnf.modules = modules;
+		cnf.modulesList = modulesList;
 		return this.parent.execDev(cnf);
 	}
 
