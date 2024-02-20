@@ -5,6 +5,8 @@ import net.runeduniverse.lib.utils.common.StringUtils;
 
 class MavenProject implements Project {
 
+	private final List<MavenProject> modules = new LinkedList();
+
 	private final Object workflow;
 	private final Maven mvn;
 
@@ -18,7 +20,6 @@ class MavenProject implements Project {
 	private boolean active = true;
 	private boolean bom = false;
 	private MavenProject parent = null;
-	private List<MavenProject> modules = new LinkedList();
 
 	MavenProject(Maven mvn){
 		this.mvn = mvn;
