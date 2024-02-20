@@ -5,7 +5,7 @@ import net.runeduniverse.lib.utils.common.StringUtils;
 
 class MavenProject implements Project {
 
-	private final List<MavenProject> modules = new LinkedList();
+	private final Set<MavenProject> modules = new LinkedHashSet();
 
 	private final Object workflow;
 	private final Maven mvn;
@@ -319,9 +319,9 @@ class MavenProject implements Project {
 		this.workflow.echo("changed:    " + this.changed == null ? "????" : this.changed.toString());
 
 		if(interate) {
-			this.modules.each {
+			for (m in this.modules) {
 				this.workflow.echo("-------------------------");
-				it.info();
+				m.info();
 			}
 		}
 	}
