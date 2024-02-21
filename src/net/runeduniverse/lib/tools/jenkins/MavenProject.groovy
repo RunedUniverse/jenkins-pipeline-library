@@ -63,12 +63,12 @@ class MavenProject implements Project {
 
 	@NonCPS
 	public MavenProject getParent() {
-		return this.parent;
+		return parent;
 	}
 
 	@NonCPS
 	public boolean isParent() {
-		return this.parent == null;
+		return parent == null;
 	}
 
 	@NonCPS
