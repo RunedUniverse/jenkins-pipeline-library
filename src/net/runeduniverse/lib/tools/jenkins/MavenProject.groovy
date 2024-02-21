@@ -232,16 +232,19 @@ class MavenProject implements Project {
 		return this.parent.execDev(cnf);
 	}
 
+	@NonCPS
+	public String toRecord() {
+		return "id:                ${this.id}\n"
+		+ "name:              ${this.name}\n"
+		+ "path:              ${this.path}\n"
+		+ "modulePath:        ${this.getModulePath()}\n"
+		+ "version:           ${this.getVersion()}\n"
+		+ "packaging (proc.): ${this.getPackagingProcedure()}\n"
+		+ "version changed:   ${this.changed == null ? "????" : this.changed.toString()}\n";
+	}
+
 	public void info(boolean interate = true) {
-		this.workflow.echo(
-				"id:                ${this.id}\n"
-				+ "name:              ${this.name}\n"
-				+ "path:              ${this.path}\n"
-				+ "modulePath:        ${this.getModulePath()}\n"
-				+ "version:           ${this.getVersion()}\n"
-				+ "packaging (proc.): ${this.getPackagingProcedure()}\n"
-				+ "version changed:   ${this.changed == null ? "????" : this.changed.toString()}\n"
-				);
+		this.workflow.echo(this.toRecord());
 
 		if(interate) {
 			for (m in this.modules) {
