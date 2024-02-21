@@ -139,10 +139,11 @@ class MavenProject implements Project {
 
 	@NonCPS
 	public String getVersion() {
-		if(this.version == null) {
-			this.version = PUtils.mvnEval(this, "project.version", null);
-		}
-		return this.version;
+		//if(this.version == null) {
+		//	this.version = PUtils.mvnEval(this, "project.version", null);
+		//}
+		//return this.version;
+		return PUtils.mvnEval(this, "project.version", null);
 	}
 
 	@NonCPS
