@@ -141,7 +141,7 @@ class MavenProject implements Project {
 		if(modulePath != null && !".".equals(modulePath)) {
 			modPath = modPath + '/' + modulePath;
 		}
-		return this.parent.getVersion(modPath);
+		return this.parent.eval(expression, modPath);
 	}
 
 	@NonCPS
