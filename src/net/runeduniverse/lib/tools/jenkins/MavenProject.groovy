@@ -9,8 +9,8 @@ class MavenProject implements Project {
 	private String name = "";
 	private String path = ".";
 	private String modulePath = null;
-	private String packagingProcedure = null;
-	private String version = null;
+	private String packagingProcedure;
+	private String version;
 	private Boolean changed = null;
 	private boolean active = true;
 	private boolean bom = false;
