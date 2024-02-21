@@ -233,13 +233,13 @@ class MavenProject implements Project {
 	}
 
 	public void info(boolean interate = true) {
-		this.workflow.echo("id:                " + this.id);
-		this.workflow.echo("name:              " + this.name);
-		this.workflow.echo("path:              " + this.path);
-		this.workflow.echo("modulePath:        " + this.getModulePath());
-		this.workflow.echo("version:           " + this.getVersion());
-		this.workflow.echo("packaging (proc.): " + this.getPackagingProcedure());
-		this.workflow.echo("version changed:   " + this.changed == null ? "????" : this.changed.toString());
+		this.workflow.echo("id:                ${this.id}");
+		this.workflow.echo("name:              ${this.name}");
+		this.workflow.echo("path:              ${this.path}");
+		this.workflow.echo("modulePath:        ${this.getModulePath()}");
+		this.workflow.echo("version:           ${this.getVersion()}");
+		this.workflow.echo("packaging (proc.): ${this.getPackagingProcedure()}");
+		this.workflow.echo("version changed:   ${this.changed == null ? "????" : this.changed.toString()}");
 
 		if(interate) {
 			for (m in this.modules) {
