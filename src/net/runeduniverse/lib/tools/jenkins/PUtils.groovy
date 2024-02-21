@@ -70,7 +70,6 @@ class PUtils {
 				modulePath = modPath + '/' + modulePath;
 			}
 		}
-		final String cmd = mvn.getEvalCmd(expression, modulePath == null ? "." : modulePath);
-		return mvn.exec(project.path, cmd);
+		return mvn.eval(expression, project.path, modulePath == null ? "." : modulePath);
 	}
 }
