@@ -233,17 +233,15 @@ class MavenProject implements Project {
 	}
 
 	public void info(boolean interate = true) {
-		String tree = "";
-		tree = tree + "id:                " + this.id + "\n";
-		tree = tree + "name:              " + this.name + "\n";
-		tree = tree + "path:              " + this.path + "\n";
-		if(this.modulePath != null)
-			tree = tree + "modulePath:        " + this.modulePath + "\n";
-		tree = tree + "version:           " + this.getVersion() + "\n";
-		tree = tree + "packaging (proc.): " + this.getPackagingProcedure() + "\n";
-		tree = tree + "version changed:   " + this.changed == null ? "????" : this.changed.toString();
-
-		this.workflow.echo("${tree}");
+		this.workflow.echo(
+				"id:                ${this.id}\n"
+				+ "name:              ${this.name}\n"
+				+ "path:              ${this.path}\n"
+				+ "modulePath:        ${this.getModulePath()}\n"
+				+ "version:           ${this.getVersion()}\n"
+				+ "packaging (proc.): ${this.getPackagingProcedure()}\n"
+				+ "version changed:   ${this.changed == null ? "????" : this.changed.toString()}\n"
+				);
 
 		if(interate) {
 			for (m in this.modules) {
