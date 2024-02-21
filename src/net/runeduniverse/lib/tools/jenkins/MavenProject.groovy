@@ -234,15 +234,7 @@ class MavenProject implements Project {
 
 	@NonCPS
 	public String toRecord() {
-		String tree = "";
-		tree = tree +  "id:                ${this.id}\n";
-		tree = tree +  "name:              ${this.name}\n";
-		tree = tree +  "path:              ${this.path}\n";
-		tree = tree +  "modulePath:        ${this.getModulePath()}\n";
-		tree = tree +  "version:           ${this.getVersion()}\n";
-		tree = tree +  "packaging (proc.): ${this.getPackagingProcedure()}\n";
-		tree = tree +  "version changed:   ${this.changed == null ? "????" : this.changed.toString()}\n";
-		return tree;
+		return "id:                ${this.id}\nname:              ${this.name}\npath:              ${this.path}\nmodulePath:        ${this.getModulePath()}\nversion:           ${this.getVersion()}\npackaging (proc.): ${this.getPackagingProcedure()}\nversion changed:   ${this.changed == null ? "????" : this.changed.toString()}\n";
 	}
 
 	public void info(boolean interate = true) {
