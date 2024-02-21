@@ -41,47 +41,38 @@ class MavenProject implements Project {
 	// GETTER
 	////////////////////////////////////////////////////////////
 
-	@NonCPS
 	public String getId() {
 		return this.id;
 	}
 
-	@NonCPS
 	public String getName() {
 		return this.name;
 	}
 
-	@NonCPS
 	public String getPath() {
 		return this.path;
 	}
 
-	@NonCPS
 	public String getModulePath() {
 		return this.modulePath == null ? this.path : this.modulePath;
 	}
 
-	@NonCPS
 	public MavenProject getParent() {
 		return this.parent;
 	}
 
-	@NonCPS
 	public boolean isParent() {
 		return this.parent == null;
 	}
 
-	@NonCPS
 	public boolean hasChanged() {
 		return this.changed == null ? true : this.changed;
 	}
 
-	@NonCPS
 	public boolean isActive() {
 		return this.active;
 	}
 
-	@NonCPS
 	public boolean isBOM() {
 		return this.bom;
 	}
@@ -90,51 +81,43 @@ class MavenProject implements Project {
 	// SETTER
 	////////////////////////////////////////////////////////////
 
-	@NonCPS
 	public MavenProject setId(String id) {
 		this.id = id;
 		return this;
 	}
 
-	@NonCPS
 	public MavenProject setName(String name) {
 		this.name = name;
 		return this;
 	}
 
-	@NonCPS
 	public MavenProject setPath(String path) {
 		this.path = path;
 		return this;
 	}
 
-	@NonCPS
 	public void setChanged(boolean changed) {
 		this.changed = changed;
 	}
 
-	@NonCPS
 	public void setActive(boolean active) {
 		this.active = active;
 	}
 
 	////////////////////////////////////////////////////////////
 
-	@NonCPS
 	public MavenProject addModule(MavenProject project) {
 		project.parent = this;
 		this.modules.add(project);
 		return this;
 	}
 
-	@NonCPS
 	public MavenProject addModule(Map conf) {
 		MavenProject project = new MavenProject(this.mvn, conf);
 		this.addModule(project);
 		return project;
 	}
 
-	@NonCPS
 	public void attachTo(PipelineBuilder builder) {
 		builder.attachProject(this);
 		for (m in this.modules) {
@@ -142,7 +125,6 @@ class MavenProject implements Project {
 		}
 	}
 
-	@NonCPS
 	public String getVersion() {
 		if(this.version == null) {
 			this.version = PUtils.mvnEval(this, "project.version", null);
@@ -150,7 +132,6 @@ class MavenProject implements Project {
 		return this.version;
 	}
 
-	@NonCPS
 	public String getPackagingProcedure() {
 		if(this.packagingProcedure == null) {
 			this.packagingProcedure = PUtils.mvnEval(this, "project.packaging", null);

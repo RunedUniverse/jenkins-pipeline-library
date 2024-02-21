@@ -17,22 +17,18 @@ class Maven implements BuildTool {
 		return "maven";
 	}
 
-	@NonCPS
 	public String getTool() {
 		return tool;
 	}
 
-	@NonCPS
 	public void setTool(String tool) {
 		this.tool = tool;
 	}
 
-	@NonCPS
 	public void addRepoProfile(String repo) {
 		this.repoProfiles.add(repo);
 	}
 
-	@NonCPS
 	public MavenProject createProject(Map conf) {
 		return new MavenProject(this, conf);
 	}
