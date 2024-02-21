@@ -26,6 +26,7 @@ class PUtils {
 
 	public static mvnExecDev(MavenProject project, Map<String,Object> cnf = [:]) {
 		final Maven mvn = project.mvn;
+		mvn.workflow.echo(project.getId());
 		List<String> modules = toStringList(cnf.modules);
 		if(project.parent == null || Boolean.TRUE.equals(cnf.skipParent)) {
 			List<String> profiles = new LinkedList();
