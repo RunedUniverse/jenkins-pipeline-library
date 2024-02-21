@@ -41,18 +41,22 @@ class MavenProject implements Project {
 	// GETTER
 	////////////////////////////////////////////////////////////
 
+	@NonCPS
 	public String getId() {
 		return this.id;
 	}
 
+	@NonCPS
 	public String getName() {
 		return this.name;
 	}
 
+	@NonCPS
 	public String getPath() {
 		return this.path;
 	}
 
+	@NonCPS
 	public String getModulePath() {
 		return this.modulePath == null ? this.path : this.modulePath;
 	}
@@ -67,14 +71,17 @@ class MavenProject implements Project {
 		return this.parent == null;
 	}
 
+	@NonCPS
 	public boolean hasChanged() {
 		return this.changed == null ? true : this.changed;
 	}
 
+	@NonCPS
 	public boolean isActive() {
 		return this.active;
 	}
 
+	@NonCPS
 	public boolean isBOM() {
 		return this.bom;
 	}
