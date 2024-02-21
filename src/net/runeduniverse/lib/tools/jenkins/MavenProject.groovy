@@ -12,6 +12,8 @@ class MavenProject implements Project {
 	private String name = "";
 	private String path = ".";
 	private String modulePath = null;
+	private String packagingProcedure = null;
+	private String version = null;
 	private Boolean changed = null;
 	private boolean active = true;
 	private boolean bom = false;
@@ -125,17 +127,43 @@ class MavenProject implements Project {
 		}
 	}
 
-	public String getVersion(modulePath = null) {
-		String modPath = modulePath == null ? "." : modulePath;
-
+	@NonCPS
+	public String eval(String expression, String modulePath = null) {
 		if(this.parent == null) {
-			return this.mvn.eval("project.version", this.path, modPath);
+			return this.mvn.eval(expression, this.path, modulePath == null ? "." : modulePath);
 		}
-		modPath = this.modulePath == null ? this.path : this.modulePath;
-		if(modulePath != null) {
+		//String modPath = getModulePath();
+		String modPath = this.modulePath == null ? this.path : this.modulePath;
+		if(modulePath != null && !".".equals(modulePath)) {
 			modPath = modPath + '/' + modulePath;
 		}
 		return this.parent.getVersion(modPath);
+	}
+
+	@NonCPS
+	public String getVersion() {
+		if(this.version == null) {
+			this.version = getVersion(".");
+		}
+		return this.version;
+	}
+
+	@NonCPS
+	public String getVersion(String modulePath) {
+		return eval("project.version", modulePath);
+	}
+
+	@NonCPS
+	public String getPackagingProcedure() {
+		if(this.packagingProcedure == null) {
+			this.packagingProcedure = getPackagingProcedure(".");
+		}
+		return this.packagingProcedure;
+	}
+
+	@NonCPS
+	public String getPackagingProcedure(String modulePath) {
+		return eval("project.packaging", modulePath);
 	}
 
 	public void purgeCache() {

@@ -24,6 +24,8 @@ interface Project extends Serializable {
 
 	public void attachTo(PipelineBuilder builder);
 
+	//public List<Project> collectProjects(Map config);
+
 	public void purgeCache();
 
 	public void resolveResources();
