@@ -47,23 +47,21 @@ class PipelineBuilder implements Serializable {
 		return this.projects.collect { it.value };
 	}
 
-	public List<Project> selectProjects(Map<String,Closure> config = [filter: { p -> true }]) {
+	public Map<String,Closure> forEachProject(Map<String,Closure> config = [filter: { p -> true }, when : { p -> true }, name : { p -> p.getName() }], Closure block) {
 		Closure filter = config.filter instanceof Closure ? config.filter : { p -> true };
 		return this.projects.collect {
 			it.value
 		}.findAll {
 			Boolean.TRUE.equals(filter(it));
-		};
-	}
-
-	public Map<String,Closure> forEachProject(Map<String,Closure> config = [filter: { p -> true }, when : { p -> true }, name : { p -> p.getName() }], Closure block) {
-		Closure when = config.when instanceof Closure ? config.when : { p -> true };
-		return selectProjects(config).collectEntries { project ->
+		}.collectEntries { project ->
 			String nameTxt = config.name instanceof Closure ? config.name(project) : project.getName();
 			if(nameTxt == null) {
 				nameTxt = project.getId();
 			}
-			Boolean whenValue = Boolean.TRUE.equals(when(project));
+			Boolean whenValue = config.when instanceof Closure ? config.when(project) : true;
+			if(whenValue == null) {
+				whenValue = false;
+			}
 			Map cnf = [:];
 			block.resolveStrategy = Closure.OWNER_FIRST;
 			block.delegate = cnf;

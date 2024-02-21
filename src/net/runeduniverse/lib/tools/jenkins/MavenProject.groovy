@@ -5,8 +5,6 @@ import net.runeduniverse.lib.utils.common.StringUtils;
 
 class MavenProject implements Project {
 
-	private final Set<MavenProject> modules = new LinkedHashSet();
-
 	private final Object workflow;
 	private final Maven mvn;
 
@@ -14,12 +12,11 @@ class MavenProject implements Project {
 	private String name = "";
 	private String path = ".";
 	private String modulePath = null;
-	private String packagingProcedure = null;
-	private String version = null;
 	private Boolean changed = null;
 	private boolean active = true;
 	private boolean bom = false;
 	private MavenProject parent = null;
+	private List<MavenProject> modules = new LinkedList();
 
 	MavenProject(Maven mvn){
 		this.mvn = mvn;
@@ -54,11 +51,6 @@ class MavenProject implements Project {
 
 	public String getPath() {
 		return this.path;
-	}
-
-	@NonCPS
-	public String getModulePath() {
-		return this.modulePath == null ? this.path : this.modulePath;
 	}
 
 	public boolean isParent() {
@@ -128,48 +120,22 @@ class MavenProject implements Project {
 
 	public void attachTo(PipelineBuilder builder) {
 		builder.attachProject(this);
-
-		for (m in this.modules) {
-			m.attachTo(builder);
+		this.modules.each {
+			it.attachTo(builder);
 		}
 	}
 
-	@NonCPS
-	public String eval(String expression, String modulePath = null) {
+	public String getVersion(modulePath = null) {
+		String modPath = modulePath == null ? "." : modulePath;
+
 		if(this.parent == null) {
-			return this.mvn.eval(expression, this.path, modulePath == null ? "." : modulePath);
+			return this.mvn.eval("project.version", this.path, modPath);
 		}
-		String modPath = getModulePath();
-		if(modulePath != null && !".".equals(modulePath)) {
+		modPath = this.modulePath == null ? this.path : this.modulePath;
+		if(modulePath != null) {
 			modPath = modPath + '/' + modulePath;
 		}
 		return this.parent.getVersion(modPath);
-	}
-
-	@NonCPS
-	public String getVersion() {
-		if(this.version == null) {
-			this.version = getVersion(".");
-		}
-		return this.version;
-	}
-
-	@NonCPS
-	public String getVersion(String modulePath) {
-		return eval("project.version", modulePath);
-	}
-
-	@NonCPS
-	public String getPackagingProcedure() {
-		if(this.packagingProcedure == null) {
-			this.packagingProcedure = getPackagingProcedure(".");
-		}
-		return this.packagingProcedure;
-	}
-
-	@NonCPS
-	public String getPackagingProcedure(String modulePath) {
-		return eval("project.packaging", modulePath);
 	}
 
 	public void purgeCache() {
@@ -203,83 +169,8 @@ class MavenProject implements Project {
 		return result;
 	}
 
-	// you must not use recursion -> it errors out!
-	@NonCPS
-	protected List<MavenProject> _getModules(boolean includeSelf) {
-		List<MavenProject> results = new LinkedList();
-		List<MavenProject> searchList = new LinkedList();
-		List<MavenProject> moduleList = new LinkedList();
-
-		if(includeSelf) {
-			results.add(this);
-		}
-
-		searchList.addAll(this.modules);
-
-		while (!searchList.isEmpty()) {
-			for (entry in searchList) {
-				results.add(entry);
-				moduleList.addAll(entry.modules);
-			}
-			searchList.clear();
-			searchList.addAll(moduleList);
-		}
-
-		return results.toUnique {
-			it.hashCode()
-		}
-	}
-
-	public List<MavenProject> getModules(Map config = [:]) {
-		Closure filter = config.filter instanceof Closure ? config.filter : { p -> true };
-		return _getModules(
-				Boolean.TRUE.equals(config.includeSelf)
-				).findAll {
-					Boolean.TRUE.equals(filter(it))
-				};
-	}
-
-	public List<Project> collectProjects(Map config) {
-		return getModules(config);
-	}
-
-	@NonCPS
-	protected Map<MavenProject, String> _getModulePaths(boolean includeSelf) {
-		Map<MavenProject, String> results = new LinkedHashMap();
-		List<MavenProject> searchList = new LinkedList();
-		List<MavenProject> moduleList = new LinkedList();
-
-		if(includeSelf) {
-			results.put(this, ".");
-		}
-
-		searchList.addAll(this.modules);
-
-		while (!searchList.isEmpty()) {
-			for (entry in searchList) {
-				results.put(entry, (this == entry.parent ? "" : results.get(entry.parent) + "/") + entry.getModulePath())
-				moduleList.addAll(entry.modules);
-			}
-			searchList.clear();
-			searchList.addAll(moduleList);
-		}
-
-		return results;
-	}
-
-	public List<String> getModulePaths(Map config = [:]) {
-		Closure filter = config.filter instanceof Closure ? config.filter : { p -> true };
-		return _getModulePaths(
-				Boolean.TRUE.equals(config.includeSelf)
-				).findAll {
-					Boolean.TRUE.equals(filter(it.key))
-				}.collect {
-					it.value
-				};
-	}
-
 	public String execDev(Map cnf = [:]) {
-		List<String> modulesList = toStringList(cnf.modules);
+		List<String> modules = toStringList(cnf.modules);
 		if(this.parent == null || Boolean.TRUE.equals(cnf.skipParent)) {
 			List<String> profiles = new LinkedList();
 			if(!Boolean.TRUE.equals(cnf.skipRepos)) {
@@ -288,7 +179,7 @@ class MavenProject implements Project {
 			profiles.addAll(toStringList(cnf.profiles));
 			String profilesArg = profiles.isEmpty() ? "" : "-P " + profiles.join(",");
 			String goals = toStringList(cnf.goals).join(",");
-			String modulesArg = modulesList.isEmpty() ? "" : "-pl=" + modulesList.join(",");
+			String modulesArg = modules.isEmpty() ? "" : "-pl=" + modules.join(",");
 			this.workflow.echo("path:       " + this.path);
 			return this.mvn.execDev(
 					this.path,
@@ -296,16 +187,16 @@ class MavenProject implements Project {
 					toStringList(cnf.args).join(" ")
 					);
 		}
-		String modPath = getModulePath();
-		if(modulesList.isEmpty()) {
-			// select this and all children
-			modulesList.addAll(getModulePaths([ includeSelf: true ]));
+		String modPath = this.modulePath == null ? this.path : this.modulePath;
+		if(modules.isEmpty()) {
+			// compile this and all children
+			modules.add(modPath + "/*");
 		} else {
-			modulesList = modulesList.collect {
+			modules = modules.collect {
 				it.equals(".") ? modPath : modPath + '/' + it
 			}
 		}
-		cnf.modulesList = modulesList;
+		cnf.modules = modules;
 		return this.parent.execDev(cnf);
 	}
 
@@ -315,13 +206,13 @@ class MavenProject implements Project {
 		this.workflow.echo("path:       " + this.path);
 		if(this.modulePath != null)
 			this.workflow.echo("modulePath: " + this.modulePath);
-		this.workflow.echo("version:    " + this.getVersion());
+		this.workflow.echo("version:    " + this.path);
 		this.workflow.echo("changed:    " + this.changed == null ? "????" : this.changed.toString());
 
 		if(interate) {
-			for (m in this.modules) {
+			this.modules.each {
 				this.workflow.echo("-------------------------");
-				m.info();
+				it.info();
 			}
 		}
 	}
