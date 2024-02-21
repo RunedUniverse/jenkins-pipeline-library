@@ -7,7 +7,7 @@ class PUtils {
 
 	// mark with @NonCPS so Jenkins doesn't try transform it
 	// @NonCPS can't execute Pipeline steps!!!
-	//@NonCPS
+	@NonCPS
 	public static List<String> toStringList(Object obj){
 		List<String> result = new LinkedList();
 		if(obj instanceof List) {
@@ -55,6 +55,7 @@ class PUtils {
 		return mvnExecDev(project.getParent(), cnf);
 	}
 
+	@NonCPS
 	public static String mvnEval(MavenProject project, String expression, String modulePath = null) {
 		final Maven mvn = project.mvn;
 

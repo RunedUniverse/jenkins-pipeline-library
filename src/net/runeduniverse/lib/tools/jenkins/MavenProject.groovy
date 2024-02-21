@@ -2,8 +2,8 @@ package net.runeduniverse.lib.tools.jenkins;
 
 class MavenProject implements Project {
 
-	private final Object workflow;
-	private final Maven mvn;
+	protected final Object workflow;
+	protected final Maven mvn;
 
 	private String id = "";
 	private String name = "";
@@ -14,8 +14,8 @@ class MavenProject implements Project {
 	private Boolean changed = null;
 	private boolean active = true;
 	private boolean bom = false;
-	private MavenProject parent = null;
-	private List<MavenProject> modules = new LinkedList();
+	protected MavenProject parent = null;
+	protected List<MavenProject> modules = new LinkedList();
 
 	MavenProject(Maven mvn){
 		this.mvn = mvn;
