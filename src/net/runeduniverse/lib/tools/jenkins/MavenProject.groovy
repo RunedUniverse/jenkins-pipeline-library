@@ -55,6 +55,11 @@ class MavenProject implements Project {
 		return this.path;
 	}
 
+	@NonCPS
+	public String getModulePath() {
+		return this.modulePath == null ? this.path : this.modulePath;
+	}
+
 	public boolean isParent() {
 		return this.parent == null;
 	}
@@ -132,8 +137,7 @@ class MavenProject implements Project {
 		if(this.parent == null) {
 			return this.mvn.eval(expression, this.path, modulePath == null ? "." : modulePath);
 		}
-		//String modPath = getModulePath();
-		String modPath = this.modulePath == null ? this.path : this.modulePath;
+		String modPath = getModulePath();
 		if(modulePath != null && !".".equals(modulePath)) {
 			modPath = modPath + '/' + modulePath;
 		}
