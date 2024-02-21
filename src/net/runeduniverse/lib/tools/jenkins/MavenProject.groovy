@@ -144,7 +144,6 @@ class MavenProject implements Project {
 		return this.parent.eval(expression, modPath);
 	}
 
-	@NonCPS
 	public String getVersion() {
 		if(this.version == null) {
 			this.version = getVersion(".");
@@ -157,7 +156,6 @@ class MavenProject implements Project {
 		return eval("project.version", modulePath);
 	}
 
-	@NonCPS
 	public String getPackagingProcedure() {
 		if(this.packagingProcedure == null) {
 			this.packagingProcedure = getPackagingProcedure(".");
@@ -243,7 +241,7 @@ class MavenProject implements Project {
 		tree = tree + "packaging (proc.): " + this.getPackagingProcedure() + "\n";
 		tree = tree + "version changed:   " + this.changed == null ? "????" : this.changed.toString();
 
-		this.workflow.echo(tree);
+		this.workflow.echo("${tree}");
 
 		if(interate) {
 			for (m in this.modules) {
