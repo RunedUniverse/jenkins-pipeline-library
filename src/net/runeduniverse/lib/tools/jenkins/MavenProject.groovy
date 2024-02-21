@@ -144,27 +144,29 @@ class MavenProject implements Project {
 		return this.parent.eval(expression, modPath);
 	}
 
+	@NonCPS
 	public String getVersion() {
 		if(this.version == null) {
-			this.version = getVersionOf(".");
+			this.version = getVersion(".");
 		}
 		return this.version;
 	}
 
 	@NonCPS
-	public String getVersionOf(String modulePath) {
+	public String getVersion(String modulePath) {
 		return eval("project.version", modulePath);
 	}
 
+	@NonCPS
 	public String getPackagingProcedure() {
 		if(this.packagingProcedure == null) {
-			this.packagingProcedure = getPackagingProcedureOf(".");
+			this.packagingProcedure = getPackagingProcedure(".");
 		}
 		return this.packagingProcedure;
 	}
 
 	@NonCPS
-	public String getPackagingProcedureOf(String modulePath) {
+	public String getPackagingProcedure(String modulePath) {
 		return eval("project.packaging", modulePath);
 	}
 
