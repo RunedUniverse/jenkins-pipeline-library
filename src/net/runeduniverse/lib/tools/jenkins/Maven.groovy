@@ -92,8 +92,7 @@ class Maven implements BuildTool {
 	}
 
 	@NonCPS
-	public String eval(String expression, String path, String modules) {
-		String result;
-		return exec(path, "org.apache.maven.plugins:maven-help-plugin:evaluate -pl=${modules}", "-Dexpression=${expression} -q -DforceStdout");
+	public String getEvalCmd(String expression, String modules) {
+		return "org.apache.maven.plugins:maven-help-plugin:evaluate -pl=${modules} -Dexpression=${expression} -q -DforceStdout";
 	}
 }
