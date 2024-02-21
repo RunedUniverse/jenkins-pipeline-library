@@ -57,7 +57,7 @@ class PUtils {
 	}
 
 	@NonCPS
-	public static String mvnEval(MavenProject project, String expression, String modulePath = null) {
+	public static String mvnEval(MavenProject project, String expression, String modulePath) {
 		final Maven mvn = project.mvn;
 
 		while (project.parent != null) {
