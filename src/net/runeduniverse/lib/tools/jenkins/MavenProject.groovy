@@ -162,6 +162,10 @@ class MavenProject implements Project {
 		this.mvn.resolveDependencies(this.path);
 	}
 
+	public List<Project> collectProjects(Map config) {
+		return PUtils.collectMvnModules(this, config);
+	}
+
 	public void info(boolean interate = true) {
 		this.workflow.echo("id:                ${this.id}");
 		this.workflow.echo("name:              ${this.name}");

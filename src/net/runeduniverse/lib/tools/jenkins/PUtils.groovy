@@ -45,7 +45,7 @@ class PUtils {
 		String modPath = project.getModulePath();
 		if(modules.isEmpty()) {
 			// select this and all children
-			//modules.addAll(project.getModulePaths([ includeSelf: true ]));
+			modules.addAll(collectMvnModulePaths(project, true));
 		} else {
 			modules = modules.collect {
 				it.equals(".") ? modPath : modPath + '/' + it
@@ -70,5 +70,80 @@ class PUtils {
 			}
 		}
 		return mvn.eval(expression, project.getPath(), modulePath == null ? "." : modulePath);
+	}
+
+	// you must not use recursion -> it errors out!
+	@NonCPS
+	public static List<MavenProject> collectMvnModules(MavenProject project, boolean includeSelf) {
+		final List<MavenProject> results = new LinkedList();
+		final List<MavenProject> searchList = new LinkedList();
+		final List<MavenProject> moduleList = new LinkedList();
+
+		if(includeSelf) {
+			results.add(project);
+		}
+
+		searchList.addAll(project.modules);
+
+		while (!searchList.isEmpty()) {
+			for (entry in searchList) {
+				results.add(entry);
+				moduleList.addAll(entry.modules);
+			}
+			searchList.clear();
+			searchList.addAll(moduleList);
+		}
+
+		return results.toUnique {
+			it.hashCode()
+		}
+	}
+
+	@NonCPS
+	public static List<MavenProject> collectMvnModules(MavenProject project, Map<String,Object> config = [:]) {
+		final Closure filter = config.filter instanceof Closure ? config.filter : { p -> true };
+		return collectMvnModules(
+				project,
+				Boolean.TRUE.equals(config.includeSelf)
+				).findAll {
+					Boolean.TRUE.equals(filter(it))
+				};
+	}
+
+	@NonCPS
+	public static Map<MavenProject, String> collectMvnModulePaths(MavenProject project, boolean includeSelf) {
+		final Map<MavenProject, String> results = new LinkedHashMap();
+		final List<MavenProject> searchList = new LinkedList();
+		final List<MavenProject> moduleList = new LinkedList();
+
+		if(includeSelf) {
+			results.put(project, ".");
+		}
+
+		searchList.addAll(project.modules);
+
+		while (!searchList.isEmpty()) {
+			for (entry in searchList) {
+				results.put(entry, (this == entry.getParent() ? "" : results.get(entry.getParent()) + "/") + entry.getModulePath())
+				moduleList.addAll(entry.modules);
+			}
+			searchList.clear();
+			searchList.addAll(moduleList);
+		}
+
+		return results;
+	}
+
+	@NonCPS
+	public static List<String> collectMvnModulePaths(MavenProject project, Map<String,Object> config = [:]) {
+		final Closure filter = config.filter instanceof Closure ? config.filter : { p -> true };
+		return collectMvnModulePaths(
+				project,
+				Boolean.TRUE.equals(config.includeSelf)
+				).findAll {
+					Boolean.TRUE.equals(filter(it.key))
+				}.collect {
+					it.value
+				};
 	}
 }
