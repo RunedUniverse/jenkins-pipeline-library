@@ -51,7 +51,6 @@ class Maven implements BuildTool {
 		return result;
 	}
 
-	@NonCPS
 	public String execDev(String path, String cmd, String args) {
 		String globalSettingsFile = this.workflow.getProperty("GLOBAL_MAVEN_SETTINGS");
 		if(StringUtils.isBlank(globalSettingsFile)) {
