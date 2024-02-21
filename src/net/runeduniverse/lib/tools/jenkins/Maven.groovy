@@ -17,18 +17,22 @@ class Maven implements BuildTool {
 		return "maven";
 	}
 
+	@NonCPS
 	public String getTool() {
 		return tool;
 	}
 
+	@NonCPS
 	public void setTool(String tool) {
 		this.tool = tool;
 	}
-	
+
+	@NonCPS
 	public void addRepoProfile(String repo) {
 		this.repoProfiles.add(repo);
 	}
 
+	@NonCPS
 	public MavenProject createProject(Map conf) {
 		return new MavenProject(this, conf);
 	}
@@ -41,13 +45,14 @@ class Maven implements BuildTool {
 		this.workflow.dir(path: path) {
 			result = this.workflow.sh(
 					returnStdout: true,
-					script: "${this.workflow.tool this.tool}/bin/mvn ${args} ${cmd}"
+					script: "${this.workflow.tool this.tool}/bin/mvn ${cmd} ${args}"
 					);
 		};
 		return result;
 	}
 
-	public String execDev(String path, String cmd, String args = null) {
+	@NonCPS
+	public String execDev(String path, String cmd, String args) {
 		String globalSettingsFile = this.workflow.getProperty("GLOBAL_MAVEN_SETTINGS");
 		if(StringUtils.isBlank(globalSettingsFile)) {
 			globalSettingsFile = "";
@@ -72,26 +77,22 @@ class Maven implements BuildTool {
 			args = "";
 		}
 
-		String result;
-		this.workflow.dir(path: path) {
-			result = this.workflow.sh(
-					returnStdout: true,
-					script: "${this.workflow.tool this.tool}/bin/mvn ${globalSettingsFile} ${settingsFile} ${toolchains} ${cmd} ${args}"
-					);
-		};
-		return result;
+		return exec(path, "${globalSettingsFile} ${settingsFile} ${toolchains} ${cmd}", args);
 	}
 
+	@NonCPS
 	public void purgeCache(String path) {
-		execDev(path, "-P ${this.workflow.getProperty("REPOS")} dependency:purge-local-repository -DactTransitively=false -DreResolve=false --non-recursive")
+		execDev(path, "-P ${this.workflow.getProperty("REPOS")} dependency:purge-local-repository", "-DactTransitively=false -DreResolve=false --non-recursive")
 	}
 
+	@NonCPS
 	public void resolveDependencies(String path) {
-		execDev(path, "-P ${this.workflow.getProperty("REPOS")} dependency:resolve --non-recursive")
+		execDev(path, "-P ${this.workflow.getProperty("REPOS")} dependency:resolve", "--non-recursive")
 	}
 
+	@NonCPS
 	public String eval(String expression, String path, String modules) {
 		String result;
-		return exec(path, "org.apache.maven.plugins:maven-help-plugin:evaluate -Dexpression=${expression} -q -DforceStdout -pl=${modules}");
+		return exec(path, "org.apache.maven.plugins:maven-help-plugin:evaluate -pl=${modules}", "-Dexpression=${expression} -q -DforceStdout");
 	}
 }
