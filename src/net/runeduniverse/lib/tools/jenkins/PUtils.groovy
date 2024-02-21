@@ -7,7 +7,7 @@ class PUtils {
 
 	// mark with @NonCPS so Jenkins doesn't try transform it
 	// @NonCPS can't execute Pipeline steps!!!
-	@NonCPS
+	//@NonCPS
 	public static List<String> toStringList(Object obj){
 		List<String> result = new LinkedList();
 		if(obj instanceof List) {
