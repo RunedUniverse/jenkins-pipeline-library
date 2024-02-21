@@ -61,7 +61,10 @@ class MavenProject implements Project {
 		return this.modulePath == null ? this.path : this.modulePath;
 	}
 
-	@NonCPS
+	public MavenProject getParent() {
+		return this.parent;
+	}
+
 	public boolean isParent() {
 		return this.parent == null;
 	}
@@ -139,11 +142,10 @@ class MavenProject implements Project {
 
 	@NonCPS
 	public String getVersion() {
-		//if(this.version == null) {
-		//	this.version = PUtils.mvnEval(this, "project.version", null);
-		//}
-		//return this.version;
-		return PUtils.mvnEval(this, "project.version", null);
+		if(this.version == null) {
+			this.version = PUtils.mvnEval(this, "project.version", null);
+		}
+		return this.version;
 	}
 
 	@NonCPS
