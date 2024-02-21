@@ -137,7 +137,7 @@ class MavenProject implements Project {
 	@NonCPS
 	public String getVersion() {
 		if(version == null) {
-			version = PUtils.mvnEval(this, "project.version", null);
+			this.version = PUtils.mvnEval(this, "project.version", null);
 		}
 		return version;
 	}
@@ -145,7 +145,7 @@ class MavenProject implements Project {
 	@NonCPS
 	public String getPackagingProcedure() {
 		if(packagingProcedure == null) {
-			packagingProcedure = PUtils.mvnEval(this, "project.packaging", null);
+			this.packagingProcedure = PUtils.mvnEval(this, "project.packaging", null);
 		}
 		return packagingProcedure;
 	}
