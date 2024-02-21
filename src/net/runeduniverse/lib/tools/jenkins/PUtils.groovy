@@ -59,13 +59,17 @@ class PUtils {
 	@NonCPS
 	public static String mvnEval(MavenProject project, String expression, String modulePath = null) {
 		final Maven mvn = project.mvn;
-		if(project.parent == null) {
-			return mvn.eval(expression, project.path, modulePath == null ? "." : modulePath);
+
+		while (project.parent != null) {
+			// save module-path in case of null or .
+			String modPath = project.getModulePath();
+			project = project.parent;
+			if(modulePath == null || ".".equals(modulePath)) {
+				modulePath = modPath;
+			}else {
+				modulePath = modPath + '/' + modulePath;
+			}
 		}
-		String modPath = project.getModulePath();
-		if(modulePath != null && !".".equals(modulePath)) {
-			modPath = modPath + '/' + modulePath;
-		}
-		return mvnEval(project.parent, expression, modPath);
+		return mvn.eval(expression, project.path, modulePath == null ? "." : modulePath);
 	}
 }
