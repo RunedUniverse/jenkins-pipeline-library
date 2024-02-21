@@ -61,10 +61,12 @@ class MavenProject implements Project {
 		return this.modulePath == null ? this.path : this.modulePath;
 	}
 
+	@NonCPS
 	public MavenProject getParent() {
 		return this.parent;
 	}
 
+	@NonCPS
 	public boolean isParent() {
 		return this.parent == null;
 	}

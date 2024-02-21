@@ -37,7 +37,7 @@ class PUtils {
 			String goals = toStringList(cnf.goals).join(",");
 			String modulesArg = modules.isEmpty() ? "" : "-pl=" + modules.join(",");
 			return mvn.execDev(
-					project.path,
+					project.getPath(),
 					"${profilesArg} ${goals} ${modulesArg}",
 					toStringList(cnf.args).join(" ")
 					);
@@ -52,22 +52,22 @@ class PUtils {
 			}
 		}
 		cnf.modules = modules;
-		return mvnExecDev(project.parent, cnf);
+		return mvnExecDev(project.getParent(), cnf);
 	}
 
 	public static String mvnEval(MavenProject project, String expression, String modulePath = null) {
 		final Maven mvn = project.mvn;
 
-		while (project.parent != null) {
+		while (project.getParent() != null) {
 			// save module-path in case of null or .
 			String modPath = project.getModulePath();
-			project = project.parent;
+			project = project.getParent();
 			if(modulePath == null || ".".equals(modulePath)) {
 				modulePath = modPath;
 			}else {
 				modulePath = modPath + '/' + modulePath;
 			}
 		}
-		return mvn.eval(expression, project.path, modulePath == null ? "." : modulePath);
+		return mvn.eval(expression, project.getPath(), modulePath == null ? "." : modulePath);
 	}
 }
