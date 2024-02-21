@@ -6,6 +6,7 @@ import net.runeduniverse.lib.utils.common.StringUtils;
 class Maven implements BuildTool {
 
 	protected final Object workflow;
+	protected final List<String> repoProfiles = new LinkedList();
 	private String tool = "maven-latest";
 
 	Maven(workflow){
@@ -22,6 +23,10 @@ class Maven implements BuildTool {
 
 	public void setTool(String tool) {
 		this.tool = tool;
+	}
+	
+	public void addRepoProfile(String repo) {
+		this.repoProfiles.add(repo);
 	}
 
 	public MavenProject createProject(Map conf) {

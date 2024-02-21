@@ -1,8 +1,5 @@
 package net.runeduniverse.lib.tools.jenkins;
 
-@Grab('net.runeduniverse.lib.utils:utils-common:1.1.0')
-import net.runeduniverse.lib.utils.common.StringUtils;
-
 class MavenProject implements Project {
 
 	private final Object workflow;
@@ -24,6 +21,7 @@ class MavenProject implements Project {
 		this.mvn = mvn;
 		this.workflow = this.mvn.workflow;
 	}
+
 	MavenProject(Maven mvn, Map conf){
 		this.mvn = mvn;
 		this.workflow = this.mvn.workflow;
@@ -43,14 +41,17 @@ class MavenProject implements Project {
 	// GETTER
 	////////////////////////////////////////////////////////////
 
+	@NonCPS
 	public String getId() {
 		return this.id;
 	}
 
+	@NonCPS
 	public String getName() {
 		return this.name;
 	}
 
+	@NonCPS
 	public String getPath() {
 		return this.path;
 	}
@@ -60,18 +61,22 @@ class MavenProject implements Project {
 		return this.modulePath == null ? this.path : this.modulePath;
 	}
 
+	@NonCPS
 	public boolean isParent() {
 		return this.parent == null;
 	}
 
+	@NonCPS
 	public boolean hasChanged() {
 		return this.changed == null ? true : this.changed;
 	}
 
+	@NonCPS
 	public boolean isActive() {
 		return this.active;
 	}
 
+	@NonCPS
 	public boolean isBOM() {
 		return this.bom;
 	}
@@ -80,68 +85,56 @@ class MavenProject implements Project {
 	// SETTER
 	////////////////////////////////////////////////////////////
 
+	@NonCPS
 	public MavenProject setId(String id) {
 		this.id = id;
 		return this;
 	}
 
+	@NonCPS
 	public MavenProject setName(String name) {
 		this.name = name;
 		return this;
 	}
+
+	@NonCPS
 	public MavenProject setPath(String path) {
 		this.path = path;
 		return this;
 	}
 
+	@NonCPS
 	public void setChanged(boolean changed) {
 		this.changed = changed;
 	}
 
+	@NonCPS
 	public void setActive(boolean active) {
 		this.active = active;
 	}
 
-	public MavenProject setModulePath(String modulePath) {
-		this.modulePath = modulePath;
-		return this;
-	}
-
-	protected void setParent(MavenProject parent) {
-		this.parent = parent;
-	}
-
 	////////////////////////////////////////////////////////////
 
+	@NonCPS
 	public MavenProject addModule(MavenProject project) {
-		project.setParent(this);
+		project.parent = this;
 		this.modules.add(project);
 		return this;
 	}
 
+	@NonCPS
 	public MavenProject addModule(Map conf) {
 		MavenProject project = new MavenProject(this.mvn, conf);
 		this.addModule(project);
 		return project;
 	}
 
+	@NonCPS
 	public void attachTo(PipelineBuilder builder) {
 		builder.attachProject(this);
-		this.modules.each {
-			it.attachTo(builder);
+		for (m in this.modules) {
+			m.attachTo(builder);
 		}
-	}
-
-	@NonCPS
-	public String eval(String expression, String modulePath = null) {
-		if(this.parent == null) {
-			return this.mvn.eval(expression, this.path, modulePath == null ? "." : modulePath);
-		}
-		String modPath = getModulePath();
-		if(modulePath != null && !".".equals(modulePath)) {
-			modPath = modPath + '/' + modulePath;
-		}
-		return this.parent.eval(expression, modPath);
 	}
 
 	@NonCPS
@@ -154,7 +147,7 @@ class MavenProject implements Project {
 
 	@NonCPS
 	public String getVersion(String modulePath) {
-		return eval("project.version", modulePath);
+		return PUtils.mvnEval(this, "project.version", modulePath);
 	}
 
 	@NonCPS
@@ -167,7 +160,7 @@ class MavenProject implements Project {
 
 	@NonCPS
 	public String getPackagingProcedure(String modulePath) {
-		return eval("project.packaging", modulePath);
+		return PUtils.mvnEval(this, "project.packaging", modulePath);
 	}
 
 	public void purgeCache() {
@@ -180,56 +173,6 @@ class MavenProject implements Project {
 		if(this.parent != null)
 			return;
 		this.mvn.resolveDependencies(this.path);
-	}
-
-	// mark with @NonCPS so Jenkins doesn't try transform it
-	// @NonCPS can't execute Pipeline steps!!!
-	@NonCPS
-	private List<String> toStringList(Object obj){
-		List<String> result = new LinkedList();
-		if(obj instanceof List) {
-			result.addAll(obj.toUnique().grep {
-				it instanceof String && !StringUtils.isBlank(it)
-			}.collect {
-				it.trim()
-			});
-		} else {
-			if(obj instanceof String && !StringUtils.isBlank(obj)) {
-				result.add(obj.trim());
-			}
-		}
-		return result;
-	}
-
-	public String execDev(Map cnf = [:]) {
-		List<String> modules = toStringList(cnf.modules);
-		if(this.parent == null || Boolean.TRUE.equals(cnf.skipParent)) {
-			List<String> profiles = new LinkedList();
-			if(!Boolean.TRUE.equals(cnf.skipRepos)) {
-				profiles.add(this.workflow.getProperty("REPOS"));
-			}
-			profiles.addAll(toStringList(cnf.profiles));
-			String profilesArg = profiles.isEmpty() ? "" : "-P " + profiles.join(",");
-			String goals = toStringList(cnf.goals).join(",");
-			String modulesArg = modules.isEmpty() ? "" : "-pl=" + modules.join(",");
-			this.workflow.echo("path:       " + this.path);
-			return this.mvn.execDev(
-					this.path,
-					"${profilesArg} ${goals} ${modulesArg}",
-					toStringList(cnf.args).join(" ")
-					);
-		}
-		String modPath = this.modulePath == null ? this.path : this.modulePath;
-		if(modules.isEmpty()) {
-			// compile this and all children
-			modules.add(modPath + "/*");
-		} else {
-			modules = modules.collect {
-				it.equals(".") ? modPath : modPath + '/' + it
-			}
-		}
-		cnf.modules = modules;
-		return this.parent.execDev(cnf);
 	}
 
 	public void info(boolean interate = true) {
