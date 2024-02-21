@@ -137,30 +137,18 @@ class MavenProject implements Project {
 		}
 	}
 
-	@NonCPS
 	public String getVersion() {
 		if(this.version == null) {
-			this.version = getVersion(".");
+			this.version = PUtils.mvnEval(this, "project.version");
 		}
 		return this.version;
 	}
 
-	@NonCPS
-	public String getVersion(String modulePath) {
-		return PUtils.mvnEval(this, "project.version", modulePath);
-	}
-
-	@NonCPS
 	public String getPackagingProcedure() {
 		if(this.packagingProcedure == null) {
-			this.packagingProcedure = getPackagingProcedure(".");
+			this.packagingProcedure = PUtils.mvnEval(this, "project.packaging");
 		}
 		return this.packagingProcedure;
-	}
-
-	@NonCPS
-	public String getPackagingProcedure(String modulePath) {
-		return PUtils.mvnEval(this, "project.packaging", modulePath);
 	}
 
 	public void purgeCache() {
