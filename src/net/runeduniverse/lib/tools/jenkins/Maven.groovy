@@ -82,12 +82,14 @@ class Maven implements BuildTool {
 
 	@NonCPS
 	public void purgeCache(String path) {
-		execDev(path, "-P ${this.workflow.getProperty("REPOS")} dependency:purge-local-repository", "-DactTransitively=false -DreResolve=false --non-recursive")
+		List<String> profiles = PUtils.toStringList(this.repoProfiles);
+		execDev(path, "${profiles.isEmpty() ? "" : "-P " + profiles.join(",")} dependency:purge-local-repository", "-DactTransitively=false -DreResolve=false --non-recursive");
 	}
 
 	@NonCPS
 	public void resolveDependencies(String path) {
-		execDev(path, "-P ${this.workflow.getProperty("REPOS")} dependency:resolve", "--non-recursive")
+		List<String> profiles = PUtils.toStringList(this.repoProfiles);
+		execDev(path, "${profiles.isEmpty() ? "" : "-P " + profiles.join(",")} dependency:resolve", "--non-recursive");
 	}
 
 	@NonCPS
