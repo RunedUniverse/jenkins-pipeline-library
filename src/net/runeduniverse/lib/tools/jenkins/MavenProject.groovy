@@ -9,8 +9,8 @@ class MavenProject implements Project {
 	private String name = "";
 	private String path = ".";
 	private String modulePath = null;
-	private String packagingProcedure;
-	private String version;
+	private String packagingProcedure = null;
+	private String version = null;
 	private Boolean changed = null;
 	private boolean active = true;
 	private boolean bom = false;
@@ -137,7 +137,7 @@ class MavenProject implements Project {
 	@NonCPS
 	public String getVersion() {
 		if(version == null) {
-			this.version = PUtils.mvnEval(this, "project.version", null);
+			version = PUtils.mvnEval(this, "project.version", null);
 		}
 		return version;
 	}
@@ -145,7 +145,7 @@ class MavenProject implements Project {
 	@NonCPS
 	public String getPackagingProcedure() {
 		if(packagingProcedure == null) {
-			this.packagingProcedure = PUtils.mvnEval(this, "project.packaging", null);
+			packagingProcedure = PUtils.mvnEval(this, "project.packaging", null);
 		}
 		return packagingProcedure;
 	}
