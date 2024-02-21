@@ -51,7 +51,7 @@ class Maven implements BuildTool {
 		return result;
 	}
 
-	public String execDev(String path, String cmd, String args) {
+	public String execDev(String path, String cmd, String args = null) {
 		String globalSettingsFile = this.workflow.getProperty("GLOBAL_MAVEN_SETTINGS");
 		if(StringUtils.isBlank(globalSettingsFile)) {
 			globalSettingsFile = "";
@@ -79,21 +79,17 @@ class Maven implements BuildTool {
 		return exec(path, "${globalSettingsFile} ${settingsFile} ${toolchains} ${cmd}", args);
 	}
 
-	@NonCPS
 	public void purgeCache(String path) {
-		List<String> profiles = PUtils.toStringList(this.repoProfiles);
-		execDev(path, "${profiles.isEmpty() ? "" : "-P " + profiles.join(",")} dependency:purge-local-repository", "-DactTransitively=false -DreResolve=false --non-recursive");
+		final List<String> profiles = PUtils.toStringList(this.repoProfiles);
+		execDev(path, profiles.isEmpty() ? "" : "-P " + profiles.join(",") + " dependency:purge-local-repository", "-DactTransitively=false -DreResolve=false --non-recursive");
 	}
 
-	@NonCPS
 	public void resolveDependencies(String path) {
-		List<String> profiles = PUtils.toStringList(this.repoProfiles);
-		execDev(path, "${profiles.isEmpty() ? "" : "-P " + profiles.join(",")} dependency:resolve", "--non-recursive");
+		final List<String> profiles = PUtils.toStringList(this.repoProfiles);
+		execDev(path, profiles.isEmpty() ? "" : "-P " + profiles.join(",") + " dependency:resolve", "--non-recursive");
 	}
 
-	@NonCPS
 	public String eval(String expression, String path, String modules) {
-		String result;
 		return exec(path, "org.apache.maven.plugins:maven-help-plugin:evaluate -pl=${modules}", "-Dexpression=${expression} -q -DforceStdout");
 	}
 }

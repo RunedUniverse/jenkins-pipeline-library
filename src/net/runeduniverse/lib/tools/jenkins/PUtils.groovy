@@ -24,7 +24,6 @@ class PUtils {
 		return result;
 	}
 
-	@NonCPS
 	public static mvnExecDev(MavenProject project, Map<String,Object> cnf = [:]) {
 		final Maven mvn = project.mvn;
 		List<String> modules = toStringList(cnf.modules);
@@ -46,7 +45,7 @@ class PUtils {
 		String modPath = project.getModulePath();
 		if(modules.isEmpty()) {
 			// select this and all children
-			//modules.addAll(getModulePaths([ includeSelf: true ]));
+			//modules.addAll(project.getModulePaths([ includeSelf: true ]));
 		} else {
 			modules = modules.collect {
 				it.equals(".") ? modPath : modPath + '/' + it
@@ -56,7 +55,6 @@ class PUtils {
 		return mvnExecDev(project.parent, cnf);
 	}
 
-	@NonCPS
 	public static String mvnEval(MavenProject project, String expression, String modulePath = null) {
 		final Maven mvn = project.mvn;
 
